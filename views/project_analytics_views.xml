@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Custom list view for projects in account module -->
+    <record id="view_project_list_account_analytics" model="ir.ui.view">
+        <field name="name">project.project.list.account.analytics</field>
+        <field name="model">project.project</field>
+        <field name="arch" type="xml">
+            <list string="Project Analytics" create="false" edit="false" delete="false">
+<!--                <field name="project_id_display" string="Project ID"/>-->
+                <field name="client_name" string="Name of Client"/>
+                <field name="name" string="Name of Project"/>
+                <field name="head_of_project" string="Head of Project"/>
+
+                <!-- Enhanced Customer Invoice Fields -->
+                <field name="customer_total_to_invoice" string="Customer Total to Invoice" sum="Total to Invoice" optional="hide"/>
+                <field name="customer_invoiced_amount" string="Customer Invoiced Amount" sum="Total Invoiced" optional="show"/>
+<!--                <field name="customer_paid_amount" string="Customer Paid Amount" sum="Total Paid" optional="show"/>-->
+<!--                <field name="customer_outstanding_amount" string="Customer Outstanding" sum="Total Outstanding" optional="show"/>-->
+                <field name="customer_pending_invoice" string="Customer Pending Invoice" sum="Total Pending" optional="hide"/>
+
+                <!-- Cost and Profitability Fields -->
+                <field name="total_costs_net" string="Total Costs Net" sum="Total Costs" optional="hide"/>
+                <field name="total_costs_with_tax" string="Total Cost with Tax" sum="Total with Tax" optional="hide"/>
+                <field name="profit_loss" string="Profit/Loss" sum="Total Profit/Loss" optional="show"/>
+                <field name="negative_difference" string="Negative Difference" sum="Total Negative" optional="hide"/>
+
+                <!-- Labor and Time Fields -->
+                <field name="total_hours_booked" string="Total Hours" sum="Total Hours Spent" optional="hide"/>
+                <field name="labor_costs" string="Total Labor Cost" sum="Total Labor Cost" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_project_pivot_account_analytics" model="ir.ui.view">
+        <field name="name">project.project.pivot.account.analytics</field>
+        <field name="model">project.project</field>
+        <field name="arch" type="xml">
+            <pivot string="Project Analytics Pivot" disable_linking="true">
+                <!-- Default measures - visible by default -->
+                <field name="customer_total_to_invoice" type="measure"/>
+                <field name="customer_invoiced_amount" type="measure"/>
+<!--                <field name="customer_outstanding_amount" type="measure"/>-->
+
+                <!-- Customer Invoice Measures -->
+                <field name="customer_pending_invoice" type="measure"/>
+                <field name="total_costs_net" type="measure"/>
+                <field name="total_costs_with_tax" type="measure"/>
+
+                <!-- Vendor Bill Measures -->
+<!--                <field name="vendor_bills_total" type="measure"/>-->
+<!--                <field name="vendor_bills_paid" type="measure"/>-->
+<!--                <field name="vendor_bills_outstanding" type="measure"/>-->
+
+                <!-- Cost and Profitability Measures -->
+<!--                <field name="total_costs_net" type="measure"/>-->
+<!--                <field name="total_costs_with_tax" type="measure"/>-->
+                <field name="negative_difference" type="measure"/>
+
+                <!-- Labor and Time Measures -->
+                <field name="total_hours_booked" type="measure"/>
+                <field name="labor_costs" type="measure"/>
+
+                <!-- Dimension fields - available for grouping but not active by default -->
+                <field name="name" type="row"/>
+                <!-- These will appear in the field list for users to drag to rows/columns -->
+                <field name="client_name"/>
+                <field name="name"/>
+                <field name="stage_id"/>
+                <field name="user_id"/>
+                <field name="partner_id"/>
+                <field name="company_id"/>
+                <field name="create_date"/>
+                <field name="date_start"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- Window action for project analytics -->
+    <record id="action_project_analytics_report" model="ir.actions.act_window">
+        <field name="name">Project Analytics</field>
+        <field name="res_model">project.project</field>
+        <field name="view_mode">list,pivot</field>
+        <field name="view_ids" eval="[
+      (5, 0, 0),
+      (0, 0, {'view_mode': 'list', 'view_id': ref('view_project_list_account_analytics')}),
+      (0, 0, {'view_mode': 'pivot', 'view_id': ref('view_project_pivot_account_analytics')})
+    ]"/>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No projects found</p>
+            <p>This view shows all projects for analytics and reporting purposes with detailed customer and vendor tracking.</p>
+        </field>
+    </record>
+
+    <menuitem id="project_analytic.menu_project_analytics_main"
+              name="Project Analytics"
+              parent="account.menu_finance"
+              sequence="25"
+              groups="account.group_account_readonly"/>
+
+    <menuitem id="project_analytic.menu_project_analytics_dashboard"
+              name="Dashboard"
+              parent="project_analytic.menu_project_analytics_main"
+              action="project_analytic.action_project_analytics_report"
+              sequence="1"
+              groups="account.group_account_readonly"/>
+</odoo>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <record id="project_analytic.menu_project_analytics_main" model="ir.ui.menu">
+            <field name="parent_id" ref="accountant.menu_accounting"/>
+            <field name="sequence">25</field>
+        </record>
+    </data>
+</odoo>
