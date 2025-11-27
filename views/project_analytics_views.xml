@@ -14,9 +14,11 @@
                 <field name="customer_invoiced_amount" string="Total Invoiced Amount" sum="Total Invoiced" optional="show"/>
                 <field name="customer_paid_amount" string="Total Paid Amount" sum="Total Paid" optional="show"/>
                 <field name="customer_outstanding_amount" string="Outstanding Amount" sum="Total Outstanding" optional="show"/>
+                <field name="customer_skonto_taken" string="Customer Cash Discounts (Skonto)" sum="Total Skonto Given" optional="hide"/>
 
                 <!-- Vendor Bills -->
                 <field name="vendor_bills_total" string="Vendor Bills Total" sum="Total Vendor Bills" optional="show"/>
+                <field name="vendor_skonto_received" string="Vendor Cash Discounts Received" sum="Total Skonto Received" optional="hide"/>
 
                 <!-- Cost Fields -->
                 <field name="total_costs_net" string="Net Costs (without tax)" sum="Total Costs Net" optional="show"/>
@@ -42,9 +44,11 @@
                 <field name="customer_invoiced_amount" type="measure"/>
                 <field name="customer_paid_amount" type="measure"/>
                 <field name="customer_outstanding_amount" type="measure"/>
+                <field name="customer_skonto_taken" type="measure"/>
 
                 <!-- Vendor Bill Measures -->
                 <field name="vendor_bills_total" type="measure"/>
+                <field name="vendor_skonto_received" type="measure"/>
 
                 <!-- Cost Measures -->
                 <field name="total_costs_net" type="measure"/>

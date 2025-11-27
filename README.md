@@ -50,6 +50,61 @@ For each project, it shows:
 
 ---
 
+## 💰 Skonto (Cash Discount) Tracking
+
+This module properly tracks **Skonto** (cash discounts) in German accounting!
+
+### What is Skonto?
+
+**Skonto** is a cash discount offered/received for early payment, very common in German business:
+
+**Example - Customer Invoice:**
+```
+Invoice Amount: €10,000 (payment terms: 2% discount within 10 days)
+Customer pays early: €9,800
+Skonto taken: €200 (booked to account 7300 "Gewährte Skonti")
+```
+
+**Example - Vendor Bill:**
+```
+Bill Amount: €5,000 (payment terms: 2% discount within 10 days)
+We pay early: €4,900
+Skonto received: €100 (booked to account 4730 "Erhaltene Skonti")
+```
+
+### How It Works
+
+The module analyzes **reconciled payment entries** to automatically detect Skonto:
+
+1. **Finds the receivable/payable line** on each invoice/bill
+2. **Analyzes reconciliation** via `matched_debit_ids` and `matched_credit_ids`
+3. **Identifies Skonto entries** by checking account codes:
+   - **Customer Skonto (Gewährte Skonti)**: Accounts 7300-7303
+   - **Vendor Skonto (Erhaltene Skonti)**: Accounts 4730-4733
+4. **Calculates proportional Skonto** for each project based on analytic distribution
+
+### Impact on Profit Calculation
+
+```python
+# Adjusted Revenue (what we actually receive)
+adjusted_revenue = customer_invoiced_amount - customer_skonto_taken
+
+# Adjusted Costs (what we actually pay)
+adjusted_vendor_costs = vendor_bills_total - vendor_skonto_received
+
+# Final Profit/Loss
+profit_loss = adjusted_revenue - adjusted_vendor_costs - total_costs_net
+```
+
+### Fields in Views
+
+- **Customer Cash Discounts (Skonto)**: Shows total Skonto taken by customers (reduces revenue)
+- **Vendor Cash Discounts Received**: Shows total Skonto received from vendors (reduces costs)
+
+Both fields are **hidden by default** in list view - enable them in optional columns if needed.
+
+---
+
 ## How does it work?
 
 The module uses Odoo v18's analytic distribution system to track all financial data:
@@ -132,6 +187,25 @@ Calculations happen **in real-time** when you view:
 - ✅ Vendor Refunds (`in_refund`) - reduces costs
 - ✅ Timesheets with labor costs
 - ✅ Other expense entries
+
+### Additional Security Features
+
+**1. Account Type Validation**
+- Customer invoices: Only includes 'income' and 'income_other' account types
+- Vendor bills: Only includes 'expense' account types
+- Prevents wrong account types from affecting calculations
+
+**2. Reversal Entry Handling (Storno)**
+- Automatically skips reversal entries (`reversed_entry_id` or `reversal_move_id`)
+- Prevents double-counting when entries are reversed
+- Common in German accounting for corrections
+
+**3. Skonto (Cash Discount) Tracking**
+- Analyzes payment reconciliations to detect Skonto
+- Customer Skonto (Gewährte Skonti): Accounts 7300-7303
+- Vendor Skonto (Erhaltene Skonti): Accounts 4730-4733
+- Proportionally allocated to projects
+- See detailed Skonto section above
 
 ### Bug Fixes Applied
 
