@@ -162,6 +162,9 @@ class ProjectAnalytics(models.Model):
         """
         Get customer invoices via analytic_distribution in account.move.line.
         This is the Odoo v18 way to link invoices to projects.
+
+        IMPORTANT: We must calculate the project portion based on invoice LINE amounts,
+        not full invoice amounts, because different lines may go to different projects.
         """
         result = {'invoiced': 0.0, 'paid': 0.0}
 
@@ -169,7 +172,8 @@ class ProjectAnalytics(models.Model):
         invoice_lines = self.env['account.move.line'].search([
             ('analytic_distribution', '!=', False),
             ('parent_state', '=', 'posted'),
-            ('move_id.move_type', '=', 'out_invoice')
+            ('move_id.move_type', '=', 'out_invoice'),
+            ('display_type', '=', False)  # Exclude section/note lines
         ])
 
         for line in invoice_lines:
@@ -184,21 +188,23 @@ class ProjectAnalytics(models.Model):
 
                 # Check if this project's analytic account is in the distribution
                 if str(analytic_account.id) in distribution:
+                    # Get the percentage allocated to this project for THIS LINE
+                    percentage = distribution.get(str(analytic_account.id), 0.0) / 100.0
+
+                    # Get the invoice to calculate payment proportion
                     invoice = line.move_id
 
-                    # Avoid counting the same invoice multiple times
-                    if invoice.id not in processed_invoices:
-                        processed_invoices.add(invoice.id)
+                    # Calculate this line's contribution to the project
+                    # Use price_total (includes taxes) to match invoice.amount_total
+                    line_amount = line.price_total * percentage
+                    result['invoiced'] += line_amount
 
-                        # Get the percentage allocated to this project
-                        percentage = distribution.get(str(analytic_account.id), 0.0) / 100.0
-
-                        # Calculate invoiced and paid amounts
-                        invoiced_amount = invoice.amount_total * percentage
-                        paid_amount = (invoice.amount_total - invoice.amount_residual) * percentage
-
-                        result['invoiced'] += invoiced_amount
-                        result['paid'] += paid_amount
+                    # Calculate the paid amount for this line
+                    # Payment proportion = (invoice.amount_total - invoice.amount_residual) / invoice.amount_total
+                    if invoice.amount_total > 0:
+                        payment_ratio = (invoice.amount_total - invoice.amount_residual) / invoice.amount_total
+                        line_paid = line_amount * payment_ratio
+                        result['paid'] += line_paid
 
             except Exception as e:
                 _logger.warning(f"Error parsing analytic_distribution for line {line.id}: {e}")
@@ -210,6 +216,9 @@ class ProjectAnalytics(models.Model):
         """
         Get vendor bills via analytic_distribution in account.move.line.
         This is the Odoo v18 way to link bills to projects.
+
+        IMPORTANT: We must calculate the project portion based on bill LINE amounts,
+        not full bill amounts, because different lines may go to different projects.
         """
         result = {'total': 0.0}
 
@@ -217,7 +226,8 @@ class ProjectAnalytics(models.Model):
         bill_lines = self.env['account.move.line'].search([
             ('analytic_distribution', '!=', False),
             ('parent_state', '=', 'posted'),
-            ('move_id.move_type', '=', 'in_invoice')
+            ('move_id.move_type', '=', 'in_invoice'),
+            ('display_type', '=', False)  # Exclude section/note lines
         ])
 
         for line in bill_lines:
@@ -232,19 +242,13 @@ class ProjectAnalytics(models.Model):
 
                 # Check if this project's analytic account is in the distribution
                 if str(analytic_account.id) in distribution:
-                    bill = line.move_id
+                    # Get the percentage allocated to this project for THIS LINE
+                    percentage = distribution.get(str(analytic_account.id), 0.0) / 100.0
 
-                    # Avoid counting the same bill multiple times
-                    if bill.id not in processed_bills:
-                        processed_bills.add(bill.id)
-
-                        # Get the percentage allocated to this project
-                        percentage = distribution.get(str(analytic_account.id), 0.0) / 100.0
-
-                        # Calculate bill amount
-                        bill_amount = bill.amount_total * percentage
-
-                        result['total'] += bill_amount
+                    # Calculate this line's contribution to the project
+                    # Use price_total (includes taxes) to match bill.amount_total
+                    line_amount = line.price_total * percentage
+                    result['total'] += line_amount
 
             except Exception as e:
                 _logger.warning(f"Error parsing analytic_distribution for bill line {line.id}: {e}")
