@@ -92,12 +92,49 @@ Calculations happen **in real-time** when you view:
 
 ## Technical Details (Odoo v18 Compatibility)
 
+### Core Features
 - Uses `analytic_distribution` JSON field (new in Odoo v18)
 - Handles percentage-based project allocation
 - Uses `parent_state='posted'` for invoice/bill lines
 - Filters out display lines (`display_type=False`)
 - Compatible with German chart of accounts
 - No `store=True` on computed fields (ensures real-time accuracy)
+- **Only uses analytic plan_id=1** (project plan in German accounting)
+
+### Handles All Document Types
+- ✅ Customer Invoices (`out_invoice`)
+- ✅ Customer Credit Notes (`out_refund`) - reduces revenue
+- ✅ Vendor Bills (`in_invoice`)
+- ✅ Vendor Refunds (`in_refund`) - reduces costs
+- ✅ Timesheets with labor costs
+- ✅ Other expense entries
+
+### Bug Fixes Applied
+
+**1. No Double-Counting of Vendor Bills**
+- Vendor bills are counted ONLY in `vendor_bills_total`
+- Tax calculation explicitly excludes vendor bill taxes (already in bill total)
+- Other costs exclude lines from vendor bills
+
+**2. Correct Tax Calculation**
+- Taxes added only for non-vendor-bill expense lines
+- Vendor bill taxes already included in `line.price_total`
+- No double-counting of taxes
+
+**3. Credit Notes & Refunds Handled**
+- Customer credit notes reduce invoiced/paid amounts
+- Vendor refunds reduce vendor bill totals
+- Correctly handles negative amounts
+
+**4. Accrual-Based Profit Calculation**
+- Profit = **Invoiced** - Costs (not just paid amount)
+- Follows German accounting standards (accrual basis)
+- Outstanding amounts tracked separately
+
+**5. Line-Based Payment Calculation**
+- Each invoice line calculated independently
+- Payment ratio applied per line
+- Handles multi-project invoices correctly
 
 ## Simple Example
 

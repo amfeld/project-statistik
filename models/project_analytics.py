@@ -96,10 +96,17 @@ class ProjectAnalytics(models.Model):
             total_hours_booked = 0.0
             labor_costs = 0.0
 
-            # Get the analytic account associated with the project (plan_id=1)
-            analytic_account = project.analytic_account_id if hasattr(project, 'analytic_account_id') else None
-            if not analytic_account:
-                analytic_account = project.account_id if hasattr(project, 'account_id') else None
+            # Get the analytic account associated with the project (plan_id=1 ONLY)
+            analytic_account = None
+            if hasattr(project, 'analytic_account_id') and project.analytic_account_id:
+                # Verify this is plan_id=1 (project plan in German accounting)
+                if hasattr(project.analytic_account_id, 'plan_id') and project.analytic_account_id.plan_id.id == 1:
+                    analytic_account = project.analytic_account_id
+
+            # Fallback to account_id if analytic_account_id not found
+            if not analytic_account and hasattr(project, 'account_id') and project.account_id:
+                if hasattr(project.account_id, 'plan_id') and project.account_id.plan_id.id == 1:
+                    analytic_account = project.account_id
 
             if not analytic_account:
                 _logger.warning(f"Project {project.id} has no analytic account - skipping financial computation")
@@ -115,17 +122,13 @@ class ProjectAnalytics(models.Model):
                 project.labor_costs = 0.0
                 continue
 
-            # Track processed invoices to avoid duplicates
-            processed_customer_invoices = set()
-            processed_vendor_bills = set()
-
             # 1. Calculate Customer Invoices (Revenue)
-            customer_data = self._get_customer_invoices_from_analytic(analytic_account, processed_customer_invoices)
+            customer_data = self._get_customer_invoices_from_analytic(analytic_account)
             customer_invoiced_amount = customer_data['invoiced']
             customer_paid_amount = customer_data['paid']
 
             # 2. Calculate Vendor Bills (Direct Costs)
-            vendor_data = self._get_vendor_bills_from_analytic(analytic_account, processed_vendor_bills)
+            vendor_data = self._get_vendor_bills_from_analytic(analytic_account)
             vendor_bills_total = vendor_data['total']
 
             # 3. Calculate Labor Costs (Timesheets)
@@ -142,8 +145,8 @@ class ProjectAnalytics(models.Model):
 
             customer_outstanding_amount = customer_invoiced_amount - customer_paid_amount
 
-            # 6. Calculate Profit/Loss
-            profit_loss = customer_paid_amount - (vendor_bills_total + total_costs_net)
+            # 6. Calculate Profit/Loss (Accrual basis: use invoiced amount, not paid)
+            profit_loss = customer_invoiced_amount - (vendor_bills_total + total_costs_net)
             negative_difference = abs(min(0, profit_loss))
 
             # Update all computed fields
@@ -158,21 +161,25 @@ class ProjectAnalytics(models.Model):
             project.total_hours_booked = total_hours_booked
             project.labor_costs = labor_costs
 
-    def _get_customer_invoices_from_analytic(self, analytic_account, processed_invoices):
+    def _get_customer_invoices_from_analytic(self, analytic_account):
         """
-        Get customer invoices via analytic_distribution in account.move.line.
+        Get customer invoices and credit notes via analytic_distribution in account.move.line.
         This is the Odoo v18 way to link invoices to projects.
 
         IMPORTANT: We must calculate the project portion based on invoice LINE amounts,
         not full invoice amounts, because different lines may go to different projects.
+
+        Handles both:
+        - out_invoice: Customer invoices (positive revenue)
+        - out_refund: Customer credit notes (negative revenue)
         """
         result = {'invoiced': 0.0, 'paid': 0.0}
 
-        # Find all posted customer invoice lines with this analytic account
+        # Find all posted customer invoice/credit note lines with this analytic account
         invoice_lines = self.env['account.move.line'].search([
             ('analytic_distribution', '!=', False),
             ('parent_state', '=', 'posted'),
-            ('move_id.move_type', '=', 'out_invoice'),
+            ('move_id.move_type', 'in', ['out_invoice', 'out_refund']),
             ('display_type', '=', False)  # Exclude section/note lines
         ])
 
@@ -197,11 +204,16 @@ class ProjectAnalytics(models.Model):
                     # Calculate this line's contribution to the project
                     # Use price_total (includes taxes) to match invoice.amount_total
                     line_amount = line.price_total * percentage
+
+                    # Credit notes (out_refund) reduce revenue, so subtract them
+                    if invoice.move_type == 'out_refund':
+                        line_amount = -abs(line_amount)  # Ensure negative
+
                     result['invoiced'] += line_amount
 
                     # Calculate the paid amount for this line
                     # Payment proportion = (invoice.amount_total - invoice.amount_residual) / invoice.amount_total
-                    if invoice.amount_total > 0:
+                    if abs(invoice.amount_total) > 0:
                         payment_ratio = (invoice.amount_total - invoice.amount_residual) / invoice.amount_total
                         line_paid = line_amount * payment_ratio
                         result['paid'] += line_paid
@@ -212,21 +224,25 @@ class ProjectAnalytics(models.Model):
 
         return result
 
-    def _get_vendor_bills_from_analytic(self, analytic_account, processed_bills):
+    def _get_vendor_bills_from_analytic(self, analytic_account):
         """
-        Get vendor bills via analytic_distribution in account.move.line.
+        Get vendor bills and refunds via analytic_distribution in account.move.line.
         This is the Odoo v18 way to link bills to projects.
 
         IMPORTANT: We must calculate the project portion based on bill LINE amounts,
         not full bill amounts, because different lines may go to different projects.
+
+        Handles both:
+        - in_invoice: Vendor bills (positive cost)
+        - in_refund: Vendor refunds (negative cost)
         """
         result = {'total': 0.0}
 
-        # Find all posted vendor bill lines with this analytic account
+        # Find all posted vendor bill/refund lines with this analytic account
         bill_lines = self.env['account.move.line'].search([
             ('analytic_distribution', '!=', False),
             ('parent_state', '=', 'posted'),
-            ('move_id.move_type', '=', 'in_invoice'),
+            ('move_id.move_type', 'in', ['in_invoice', 'in_refund']),
             ('display_type', '=', False)  # Exclude section/note lines
         ])
 
@@ -245,9 +261,17 @@ class ProjectAnalytics(models.Model):
                     # Get the percentage allocated to this project for THIS LINE
                     percentage = distribution.get(str(analytic_account.id), 0.0) / 100.0
 
+                    # Get the bill to check type
+                    bill = line.move_id
+
                     # Calculate this line's contribution to the project
                     # Use price_total (includes taxes) to match bill.amount_total
                     line_amount = line.price_total * percentage
+
+                    # Vendor refunds (in_refund) reduce costs, so subtract them
+                    if bill.move_type == 'in_refund':
+                        line_amount = -abs(line_amount)  # Ensure negative
+
                     result['total'] += line_amount
 
             except Exception as e:
@@ -309,16 +333,31 @@ class ProjectAnalytics(models.Model):
         """
         Calculate total costs with tax included.
         In German accounting, we need to add VAT to costs.
+
+        IMPORTANT: account.analytic.line.amount is typically the NET amount (without tax).
+        We need to add the tax from the related move_line_id to get the total with tax.
+
+        Note: We only add tax for lines that have a move_line_id (journal entries).
+        Labor costs from timesheets typically don't have taxes at this level.
         """
         total_costs_with_tax = labor_costs + other_costs
 
-        # Get all cost lines with tax information
+        # Get all cost lines that have journal entry references (these might have taxes)
         cost_lines = self.env['account.analytic.line'].search([
             ('account_id', '=', analytic_account.id),
-            ('amount', '<', 0)
+            ('amount', '<', 0),
+            ('move_line_id', '!=', False)  # Only lines with journal entries
         ])
 
         for line in cost_lines:
+            # Skip if already counted in vendor_bills_total (to avoid double counting)
+            if line.move_line_id and line.move_line_id.move_id:
+                move = line.move_line_id.move_id
+                if move.move_type in ['in_invoice', 'in_refund']:
+                    # This is from a vendor bill, tax already included in vendor_bills_total
+                    continue
+
+            # Add tax for non-vendor-bill expense lines
             if line.move_line_id and line.move_line_id.tax_ids:
                 line_amount = abs(line.amount)
                 for tax in line.move_line_id.tax_ids:
