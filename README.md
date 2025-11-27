@@ -9,22 +9,46 @@ This module provides comprehensive financial analytics for your projects by trac
 For each project, it shows:
 
 ### Revenue (Customer Invoices)
-- **Total Invoiced Amount**: Total amount invoiced to customers for this project
-- **Total Paid Amount**: Money actually received from customers
-- **Outstanding Amount**: Money still owed by customers (Invoiced - Paid)
+- **Total Invoiced Amount**: Total amount invoiced to customers for this project (**WITH TAX** - gross amount)
+- **Total Paid Amount**: Money actually received from customers (**WITH TAX** - gross amount)
+- **Outstanding Amount**: Money still owed by customers (Invoiced - Paid) (**WITH TAX**)
 
 ### Costs
-- **Vendor Bills Total**: Total amount of vendor bills for this project
-- **Net Costs (without tax)**: Labor costs + other costs (excluding vendor bills)
-- **Total Costs (with tax)**: Net costs with VAT/taxes included
+- **Vendor Bills Total**: Total amount of vendor bills for this project (**WITH TAX** - includes VAT)
+- **Net Costs (without tax)**: Labor costs + other costs (excluding vendor bills) (**WITHOUT TAX** - net amount)
+- **Total Costs (with tax)**: Net costs with VAT/taxes included (**WITH TAX**)
 
 ### Profitability
-- **Profit/Loss Amount**: Revenue minus all costs
+- **Profit/Loss Amount**: Revenue minus all costs (**calculated from invoiced amounts, accrual basis**)
 - **Negative Differences**: Absolute value of losses (for easy reporting)
 
 ### Labor
-- **Total Hours Booked**: Total hours logged in timesheets
-- **Labor Costs**: Cost of labor based on employee rates
+- **Total Hours Booked**: Total hours logged in timesheets (in hours)
+- **Labor Costs**: Cost of labor based on employee rates (**WITHOUT TAX** - net amount)
+
+---
+
+### Quick Reference: Net vs. Gross Amounts
+
+| Field | Tax Status | Description |
+|-------|-----------|-------------|
+| Total Invoiced Amount | **WITH TAX** 🟢 | Gross amount from customer invoices |
+| Total Paid Amount | **WITH TAX** 🟢 | Gross amount received from customers |
+| Outstanding Amount | **WITH TAX** 🟢 | Gross amount still owed |
+| Vendor Bills Total | **WITH TAX** 🟢 | Gross vendor bill amounts (includes VAT) |
+| Labor Costs | **WITHOUT TAX** 🔵 | Net labor costs |
+| Net Costs | **WITHOUT TAX** 🔵 | Labor + other costs (net) |
+| Total Costs (with tax) | **WITH TAX** 🟢 | Net costs + calculated VAT |
+| Profit/Loss Amount | **MIXED** ⚠️ | Invoiced (gross) - Vendor Bills (gross) - Net Costs (net) |
+
+**Important Notes:**
+- **Profit/Loss Formula:** `customer_invoiced_amount (gross) - vendor_bills_total (gross) - total_costs_net (net)`
+- Revenue (invoiced/paid) uses **line.price_total** which includes taxes
+- Vendor bills use **line.price_total** which includes taxes
+- Internal costs (labor, other) are typically **net amounts** from analytic lines
+- Tax is added separately to net costs in "Total Costs (with tax)"
+
+---
 
 ## How does it work?
 
@@ -140,20 +164,32 @@ Calculations happen **in real-time** when you view:
 
 **Project ABC:**
 ```
-Revenue:
-- Invoiced to customer: €10,000
-- Customer paid: €8,000
-- Outstanding: €2,000
+REVENUE (WITH TAX - GROSS):
+- Invoiced to customer: €10,000 (gross, includes 19% VAT)
+- Customer paid: €8,000 (gross, 80% of invoice paid)
+- Outstanding: €2,000 (gross)
 
-Costs:
-- Vendor bills: €3,000
-- Labor costs: €2,000
-- Other costs: €500
-- Net costs: €2,500
-- Total costs with tax: €2,975
+COSTS:
+- Vendor bills: €3,000 (gross, includes 19% VAT)
+- Labor costs: €2,000 (net, no VAT on internal labor)
+- Other costs: €500 (net)
+- Net costs total: €2,500 (net = labor + other)
+- Total costs with tax: €2,975 (net + calculated VAT on applicable items)
 
-Result:
-- Profit/Loss: €8,000 - €3,000 - €2,500 = €2,500 profit
+PROFITABILITY (ACCRUAL BASIS):
+- Profit/Loss: €10,000 (gross invoiced) - €3,000 (gross vendor bills) - €2,500 (net costs) = €4,500 profit
+
+BREAKDOWN:
+- We compare GROSS revenue (€10,000)
+- Against GROSS vendor bills (€3,000)
+- Against NET internal costs (€2,500)
+- Result: €4,500 profit (before considering taxes on internal costs)
 ```
+
+**Why This Makes Sense:**
+- Customer invoices and vendor bills naturally include VAT (external transactions)
+- Internal costs (labor, expenses) are tracked net, taxes calculated separately
+- This matches how German accounting typically tracks project profitability
+- Outstanding amount (€2,000) shows cash flow needs
 
 This helps you instantly see which projects are profitable and which need attention!
