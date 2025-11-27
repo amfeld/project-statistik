@@ -8,9 +8,9 @@ This feature automatically calculates money-related information for your project
 
 For each project, it calculates:
 
-- **Money from Customers**: How much you've invoiced customers for this project
+- **Bills to Customers**: How much you've invoiced customers for this project
 - **Money Actually Received**: How much customers have actually paid you
-- **Bills from Vendors**: How much you've paid to suppliers/vendors for this project
+- **Bills from Vendors**: How much is invoiced suppliers/vendors for this project
 - **Task Costs**: Money spent on project tasks and activities
 - **Total Project Costs**: All expenses combined (bills + task costs)
 - **Profit or Loss**: Whether you're making money or losing money on the project
