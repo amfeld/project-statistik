@@ -1,0 +1,176 @@
+# Translation for Project Statistic module
+# German / Deutsch
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-28 01:00:00\n"
+"PO-Revision-Date: 2025-11-28 01:00:00\n"
+"Last-Translator: Alex Feld\n"
+"Language-Team: German\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. module: project_statistic
+#: model:ir.model,name:project_statistic.model_project_project
+msgid "Project Analytics Extension"
+msgstr "Projektanalyse-Erweiterung"
+
+#. module: project_statistic
+#: model:ir.ui.view,arch_db:project_statistic.view_project_list_account_analytics
+msgid "Project Analytics"
+msgstr "Projektstatistik"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_list_account_analytics
+msgid "Name of Client"
+msgstr "Name des Auftraggebers"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_list_account_analytics
+msgid "Name of Project"
+msgstr "Name des Projekts"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_list_account_analytics
+msgid "Head of Project"
+msgstr "Projektleiter"
+
+#. module: project_statistic
+#: model:ir.model.fields,field_description:project_statistic.field_project_project__customer_invoiced_amount
+msgid "Total Invoiced Amount"
+msgstr "Gesamtrechnungsbetrag"
+
+#. module: project_statistic
+#: model:ir.model.fields,field_description:project_statistic.field_project_project__customer_paid_amount
+msgid "Total Paid Amount"
+msgstr "Gesamtzahlungsbetrag"
+
+#. module: project_statistic
+#: model:ir.model.fields,field_description:project_statistic.field_project_project__customer_outstanding_amount
+msgid "Outstanding Amount"
+msgstr "Offener Betrag"
+
+#. module: project_statistic
+#: model:ir.model.fields,field_description:project_statistic.field_project_project__customer_skonto_taken
+msgid "Customer Cash Discounts (Skonto)"
+msgstr "Kundenskonto (Rabatte)"
+
+#. module: project_statistic
+#: model:ir.model.fields,field_description:project_statistic.field_project_project__vendor_bills_total
+msgid "Vendor Bills Total"
+msgstr "Lieferantenrechnungen Gesamt"
+
+#. module: project_statistic
+#: model:ir.model.fields,field_description:project_statistic.field_project_project__vendor_skonto_received
+msgid "Vendor Cash Discounts Received"
+msgstr "Erhaltene Lieferantenskonti"
+
+#. module: project_statistic
+#: model:ir.model.fields,field_description:project_statistic.field_project_project__total_costs_net
+msgid "Net Costs (without tax)"
+msgstr "Nettokosten (ohne Steuer)"
+
+#. module: project_statistic
+#: model:ir.model.fields,field_description:project_statistic.field_project_project__total_costs_with_tax
+msgid "Total Costs (with tax)"
+msgstr "Gesamtkosten (mit Steuer)"
+
+#. module: project_statistic
+#: model:ir.model.fields,field_description:project_statistic.field_project_project__profit_loss
+msgid "Profit/Loss Amount"
+msgstr "Gewinn/Verlust"
+
+#. module: project_statistic
+#: model:ir.model.fields,field_description:project_statistic.field_project_project__negative_difference
+msgid "Negative Differences (losses)"
+msgstr "Negative Differenzen (Verluste)"
+
+#. module: project_statistic
+#: model:ir.model.fields,field_description:project_statistic.field_project_project__total_hours_booked
+msgid "Total Hours Booked"
+msgstr "Gebuchte Stunden Gesamt"
+
+#. module: project_statistic
+#: model:ir.model.fields,field_description:project_statistic.field_project_project__labor_costs
+msgid "Labor Costs"
+msgstr "Personalkosten"
+
+#. module: project_statistic
+#: model:ir.model.fields,field_description:project_statistic.field_project_project__project_id_display
+msgid "Project ID"
+msgstr "Projekt-ID"
+
+#. module: project_statistic
+#: model:ir.model.fields,field_description:project_statistic.field_project_project__client_name
+msgid "Name of Client"
+msgstr "Name des Auftraggebers"
+
+#. module: project_statistic
+#: model:ir.model.fields,field_description:project_statistic.field_project_project__head_of_project
+msgid "Head of Project"
+msgstr "Projektleiter"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
+msgid "Project Details"
+msgstr "Projektdetails"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
+msgid "Analytic Lines"
+msgstr "Analytische Buchungen"
+
+#. module: project_statistic
+#: model:ir.model.fields,help:project_statistic.field_project_project__customer_invoiced_amount
+msgid "Total amount invoiced to customers for this project"
+msgstr "Gesamtrechnungsbetrag an Kunden für dieses Projekt"
+
+#. module: project_statistic
+#: model:ir.model.fields,help:project_statistic.field_project_project__customer_paid_amount
+msgid "Total amount actually paid by customers"
+msgstr "Tatsächlich von Kunden gezahlter Gesamtbetrag"
+
+#. module: project_statistic
+#: model:ir.model.fields,help:project_statistic.field_project_project__customer_outstanding_amount
+msgid "Amount still owed by customers (Invoiced - Paid)"
+msgstr "Von Kunden noch geschuldeter Betrag (Rechnung - Zahlung)"
+
+#. module: project_statistic
+#: model:ir.model.fields,help:project_statistic.field_project_project__vendor_bills_total
+msgid "Total amount of vendor bills for this project"
+msgstr "Gesamtbetrag der Lieferantenrechnungen für dieses Projekt"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_graph_account_analytics
+msgid "Project Profitability Analysis"
+msgstr "Projektkostenanalyse"
+
+#. module: project_statistic
+#: code:addons/project_statistic/models/project_analytics.py:0
+#, python-format
+msgid "No analytic account found for this project."
+msgstr "Kein analytisches Konto für dieses Projekt gefunden."
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
+msgid "Customer Invoicing"
+msgstr "Kundenrechnungen"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
+msgid "Vendor Bills"
+msgstr "Lieferantenrechnungen"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
+msgid "Costs & Profitability"
+msgstr "Kosten & Rentabilität"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
+msgid "Labor"
+msgstr "Personal"
