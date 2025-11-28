@@ -328,8 +328,13 @@ class ProjectAnalytics(models.Model):
         This is a simpler and more reliable approach than analyzing reconciliation.
         Skonto entries are typically posted to specific accounts with analytic distribution.
 
-        Customer Skonto (Gewährte Skonti): Accounts 7300-7303 (expense - reduces profit)
-        Vendor Skonto (Erhaltene Skonti): Accounts 4730-4733 (income - increases profit)
+        Customer Skonto (Gewährte Skonti):
+        - Accounts 7300-7303 (expense - reduces profit)
+        - Account 2130 (liability account for customer discounts)
+
+        Vendor Skonto (Erhaltene Skonti):
+        - Accounts 4730-4733 (income - increases profit)
+        - Account 2670 (asset account for vendor discounts)
 
         Returns:
             dict: {'customer_skonto': amount, 'vendor_skonto': amount}
@@ -349,14 +354,14 @@ class ProjectAnalytics(models.Model):
             if not account_code:
                 continue
 
-            # Customer Skonto (Gewährte Skonti) - expense accounts 7300-7303
+            # Customer Skonto (Gewährte Skonti) - expense accounts 7300-7303 + liability 2130
             # These reduce our revenue/profit (customer got discount)
-            if account_code.startswith(('7300', '7301', '7302', '7303')):
+            if account_code.startswith(('7300', '7301', '7302', '7303', '2130')):
                 result['customer_skonto'] += abs(line.amount)
 
-            # Vendor Skonto (Erhaltene Skonti) - income accounts 4730-4733
+            # Vendor Skonto (Erhaltene Skonti) - income accounts 4730-4733 + asset 2670
             # These increase our profit (we got discount from vendor)
-            elif account_code.startswith(('4730', '4731', '4732', '4733')):
+            elif account_code.startswith(('4730', '4731', '4732', '4733', '2670')):
                 result['vendor_skonto'] += abs(line.amount)
 
         return result

@@ -78,8 +78,8 @@ The module queries **analytic lines directly from Skonto accounts**:
 
 1. **Finds all analytic lines** for the project's analytic account
 2. **Filters by account code** to identify Skonto entries:
-   - **Customer Skonto (Gewährte Skonti)**: Accounts 7300-7303
-   - **Vendor Skonto (Erhaltene Skonti)**: Accounts 4730-4733
+   - **Customer Skonto (Gewährte Skonti)**: Accounts 7300-7303, 2130
+   - **Vendor Skonto (Erhaltene Skonti)**: Accounts 4730-4733, 2670
 3. **Sums up amounts** - Only Skonto entries with analytic distribution are included
 
 **Why This Approach:**
@@ -88,6 +88,7 @@ The module queries **analytic lines directly from Skonto accounts**:
 - ✅ Only tracks Skonto properly allocated to projects
 - ✅ Works with any payment method or reconciliation structure
 - ✅ No complex reconciliation analysis needed
+- ✅ Supports multiple account types (P&L and balance sheet)
 
 ### Impact on Profit Calculation
 
@@ -207,10 +208,10 @@ Calculations happen **in real-time** when you view:
 - Common in German accounting for corrections
 
 **3. Skonto (Cash Discount) Tracking**
-- Analyzes payment reconciliations to detect Skonto
-- Customer Skonto (Gewährte Skonti): Accounts 7300-7303
-- Vendor Skonto (Erhaltene Skonti): Accounts 4730-4733
-- Proportionally allocated to projects
+- Queries analytic lines from Skonto accounts directly
+- Customer Skonto (Gewährte Skonti): Accounts 7300-7303, 2130
+- Vendor Skonto (Erhaltene Skonti): Accounts 4730-4733, 2670
+- Automatically tracks Skonto with analytic distribution
 - See detailed Skonto section above
 
 ### Bug Fixes Applied
