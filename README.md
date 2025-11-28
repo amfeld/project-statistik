@@ -113,12 +113,63 @@ Both fields are **hidden by default** in list view - enable them in optional col
 
 ---
 
+## ⚠️ Critical Requirements
+
+### 1. Analytic Accounting MUST Be Enabled
+
+**This module is 100% dependent on Odoo's Analytic Accounting feature.**
+
+✅ **Before using this module, ensure:**
+- Analytic Accounting is installed and activated
+- Each project has an analytic account linked (plan_id = Projects)
+- Invoice lines have `analytic_distribution` filled
+- Vendor bill lines have `analytic_distribution` filled
+
+❌ **Without analytic accounts:**
+- All financial values will show as 0
+- No data will be calculated
+- The module cannot function
+
+**How to check:**
+1. Go to: **Accounting → Configuration → Settings**
+2. Look for: **"Analytic Accounting"** feature
+3. Ensure it's enabled ✓
+4. Go to your projects and verify each has an analytic account
+
+### 2. Payment Calculation Limitation
+
+**Important:** Payment tracking has an inherent limitation in Odoo:
+
+**The Problem:**
+- Odoo tracks payments at the **invoice level**, not the **line level**
+- If an invoice has multiple lines with different projects, we cannot know which specific lines were paid
+- The module assumes payments are distributed **proportionally** across all lines
+
+**Example:**
+```
+Invoice #123 (Total: €200, Paid: €100)
+├── Line A: €100 → Project X
+└── Line B: €100 → Project Y
+
+Current calculation (proportional):
+- Project X paid: €50 (50% of €100)
+- Project Y paid: €50 (50% of €100)
+
+Reality might be different:
+- Customer might have only paid for Line A
+- But Odoo has no way to track this
+```
+
+**Impact:** Payment amounts are **estimates** when invoices have multiple projects. For most accurate tracking, use **one project per invoice** where possible.
+
+---
+
 ## How does it work?
 
 The module uses Odoo v18's analytic distribution system to track all financial data:
 
-### 1. Analytic Account (plan_id=1)
-Every project has an analytic account that serves as the central tracking point for all financial transactions.
+### 1. Analytic Account (plan_id=1 - Projects Plan)
+Every project has an analytic account that serves as the central tracking point for all financial transactions. This is the **single source of truth** for the module.
 
 ### 2. Customer Invoices
 - Finds invoice lines with `analytic_distribution` pointing to the project

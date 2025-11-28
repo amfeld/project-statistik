@@ -165,7 +165,13 @@ class ProjectAnalytics(models.Model):
                     analytic_account = project.account_id
 
             if not analytic_account:
-                _logger.debug(f"Project {project.id} has no analytic account - skipping financial computation")
+                _logger.warning(
+                    f"Project '{project.name}' (ID: {project.id}) has no analytic account linked. "
+                    f"Financial data cannot be calculated. Please ensure: "
+                    f"1) Analytic Accounting is enabled in Accounting settings, "
+                    f"2) This project has an analytic account assigned (Projects plan), "
+                    f"3) Invoice/bill lines have analytic_distribution set."
+                )
                 project.customer_invoiced_amount = 0.0
                 project.customer_paid_amount = 0.0
                 project.customer_outstanding_amount = 0.0
