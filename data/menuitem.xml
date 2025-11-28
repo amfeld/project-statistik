@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- This file updates the menu sequence for the main analytics menu defined in views -->
+    <!-- Empty data file - menus are defined in views/project_analytics_views.xml -->
     <data noupdate="0">
-        <record id="menu_project_analytics_main" model="ir.ui.menu">
-            <field name="parent_id" ref="account.menu_accounting"/>
-            <field name="sequence">25</field>
-        </record>
     </data>
 </odoo>
