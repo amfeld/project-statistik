@@ -7,7 +7,7 @@ _logger = logging.getLogger(__name__)
 
 class ProjectAnalytics(models.Model):
     _inherit = 'project.project'
-    _description = 'Project Analytics Extension'
+    _description = _('Project Analytics Extension')
 
     project_id_display = fields.Char(
         string='Project ID',
@@ -524,7 +524,7 @@ class ProjectAnalytics(models.Model):
                 'type': 'ir.actions.client',
                 'tag': 'display_notification',
                 'params': {
-                    'message': 'No analytic account found for this project.',
+                    'message': _('No analytic account found for this project.'),
                     'type': 'warning',
                     'sticky': False,
                 }
