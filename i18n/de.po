@@ -286,3 +286,13 @@ msgstr "Gesamtverluste"
 #: model:ir.actions.act_window,name:project_statistic.action_project_analytics
 msgid "Project Analytics"
 msgstr "Projektstatistik"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
+msgid "Project Details"
+msgstr "Projektdetails"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_inherit_analytics_button
+msgid "Financial Analytics"
+msgstr "Finanzanalyse"

@@ -555,3 +555,38 @@ class ProjectAnalytics(models.Model):
             'view_id': False,  # Use default project form view
             'target': 'current',
         }
+
+    def action_open_standard_project_form(self):
+        """
+        Open the standard Odoo project form view.
+        Called from the analytics form view button.
+        """
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': self.name,
+            'res_model': 'project.project',
+            'res_id': self.id,
+            'view_mode': 'form',
+            'view_id': False,  # Use default project form view
+            'target': 'current',
+        }
+
+    def action_open_analytics_form(self):
+        """
+        Open the project analytics form view.
+        Called from the standard project form view button.
+        """
+        self.ensure_one()
+        # Get the analytics form view ID
+        analytics_form_view = self.env.ref('project_statistic.view_project_form_account_analytics', raise_if_not_found=False)
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': f'Analytics - {self.name}',
+            'res_model': 'project.project',
+            'res_id': self.id,
+            'view_mode': 'form',
+            'view_id': analytics_form_view.id if analytics_form_view else False,
+            'target': 'current',
+        }

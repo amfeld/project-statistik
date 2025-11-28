@@ -98,6 +98,7 @@
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button name="action_view_account_analytic_line" type="object" class="oe_stat_button" icon="fa-pencil-square-o" string="Analytic Lines"/>
+                        <button name="action_open_standard_project_form" type="object" class="oe_stat_button" icon="fa-tasks" string="Project Details"/>
                     </div>
                     <group>
                         <group name="project_info">
@@ -195,4 +196,21 @@
               action="action_project_analytics_report"
               sequence="1"
               groups="account.group_account_readonly"/>
+
+    <!-- Inherit standard project form to add analytics button -->
+    <record id="view_project_form_inherit_analytics_button" model="ir.ui.view">
+        <field name="name">project.project.form.inherit.analytics.button</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project.edit_project"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_open_analytics_form"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-line-chart"
+                        string="Financial Analytics"
+                        groups="account.group_account_readonly"/>
+            </xpath>
+        </field>
+    </record>
 </odoo>
