@@ -29,8 +29,8 @@
                 <field name="negative_difference" string="Negative Differences (losses)" sum="Total Losses" optional="hide"/>
 
                 <!-- Labor -->
-                <field name="total_hours_booked" string="Total Hours Booked" sum="Total Hours" optional="hide"/>
-                <field name="labor_costs" string="Labor Costs" sum="Total Labor Costs" optional="hide"/>
+                <field name="total_hours_booked" string="Total Hours Booked" sum="Total Hours" optional="show"/>
+                <field name="labor_costs" string="Labor Costs" sum="Total Labor Costs" optional="show"/>
             </list>
         </field>
     </record>
