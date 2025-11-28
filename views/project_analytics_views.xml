@@ -200,7 +200,7 @@
                         class="oe_stat_button"
                         icon="fa-line-chart"
                         string="Finanzanalyse"
-                        groups="account.group_account_readonly"/>
+                        groups="accountant.group_account_readonly"/>
             </xpath>
         </field>
     </record>
