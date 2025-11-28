@@ -532,7 +532,7 @@ class ProjectAnalytics(models.Model):
             'type': 'ir.actions.act_window',
             'name': f'Analytic Lines - {self.name}',
             'res_model': 'account.analytic.line',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'domain': [('account_id', '=', analytic_account.id)],
             'context': {'default_account_id': analytic_account.id},
             'target': 'current',
