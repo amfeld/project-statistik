@@ -269,7 +269,7 @@ class ProjectAnalytics(models.Model):
                 continue
 
             # Skip reversal entries (Storno) - they cancel out the original entry
-            if line.move_id.reversed_entry_id or line.move_id.reversal_move_id:
+            if line.move_id.reversed_entry_id:
                 continue
 
             # Parse the analytic_distribution JSON
@@ -338,7 +338,7 @@ class ProjectAnalytics(models.Model):
                 continue
 
             # Skip reversal entries (Storno) - they cancel out the original entry
-            if line.move_id.reversed_entry_id or line.move_id.reversal_move_id:
+            if line.move_id.reversed_entry_id:
                 continue
 
             # Parse the analytic_distribution JSON

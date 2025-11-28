@@ -255,7 +255,7 @@ Calculations happen **in real-time** when you view:
 - Prevents wrong account types from affecting calculations
 
 **2. Reversal Entry Handling (Storno)**
-- Automatically skips reversal entries (`reversed_entry_id` or `reversal_move_id`)
+- Automatically skips reversal entries (`reversed_entry_id`)
 - Prevents double-counting when entries are reversed
 - Common in German accounting for corrections
 
