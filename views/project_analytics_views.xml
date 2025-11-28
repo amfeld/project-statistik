@@ -6,6 +6,9 @@
         <field name="model">project.project</field>
         <field name="arch" type="xml">
             <list string="Project Analytics" create="false" edit="false" delete="false">
+                <header>
+                    <button name="action_refresh_financial_data" type="object" string="Refresh Financial Data" class="btn-primary"/>
+                </header>
                 <field name="client_name" string="Name of Client"/>
                 <field name="name" string="Name of Project"/>
                 <field name="head_of_project" string="Head of Project"/>
@@ -99,6 +102,7 @@
                     <div class="oe_button_box" name="button_box">
                         <button name="action_view_account_analytic_line" type="object" class="oe_stat_button" icon="fa-pencil-square-o" string="Analytic Lines"/>
                         <button name="action_open_standard_project_form" type="object" class="oe_stat_button" icon="fa-tasks" string="Project Details"/>
+                        <button name="action_refresh_financial_data" type="object" class="oe_stat_button" icon="fa-refresh" string="Refresh Data"/>
                     </div>
                     <group>
                         <group name="project_info">
