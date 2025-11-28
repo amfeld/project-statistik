@@ -39,7 +39,7 @@
         <field name="name">project.project.pivot.account.analytics</field>
         <field name="model">project.project</field>
         <field name="arch" type="xml">
-            <pivot string="Project Analytics Pivot" disable_linking="true">
+            <pivot string="Project Analytics Pivot">
                 <!-- Customer Invoice Measures -->
                 <field name="customer_invoiced_amount" type="measure"/>
                 <field name="customer_paid_amount" type="measure"/>
@@ -75,15 +75,105 @@
         </field>
     </record>
 
+    <!-- Graph view for visual analytics -->
+    <record id="view_project_graph_account_analytics" model="ir.ui.view">
+        <field name="name">project.project.graph.account.analytics</field>
+        <field name="model">project.project</field>
+        <field name="arch" type="xml">
+            <graph string="Project Analytics Graph" type="bar" sample="1">
+                <field name="name"/>
+                <field name="customer_invoiced_amount" type="measure"/>
+                <field name="vendor_bills_total" type="measure"/>
+                <field name="profit_loss" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Form view for drill-down details -->
+    <record id="view_project_form_account_analytics" model="ir.ui.view">
+        <field name="name">project.project.form.account.analytics</field>
+        <field name="model">project.project</field>
+        <field name="arch" type="xml">
+            <form string="Project Details" create="false" edit="false" delete="false">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_account_analytic_line" type="object" class="oe_stat_button" icon="fa-pencil-square-o" string="Analytic Lines"/>
+                    </div>
+                    <group>
+                        <group name="project_info">
+                            <field name="name"/>
+                            <field name="client_name"/>
+                            <field name="head_of_project"/>
+                            <field name="partner_id"/>
+                            <field name="user_id"/>
+                            <field name="stage_id"/>
+                        </group>
+                        <group name="dates">
+                            <field name="date_start"/>
+                            <field name="date"/>
+                            <field name="create_date"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Customer Invoices" name="customer_invoices">
+                            <group>
+                                <group>
+                                    <field name="customer_invoiced_amount"/>
+                                    <field name="customer_paid_amount"/>
+                                    <field name="customer_outstanding_amount"/>
+                                </group>
+                                <group>
+                                    <field name="customer_skonto_taken"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Vendor Bills" name="vendor_bills">
+                            <group>
+                                <group>
+                                    <field name="vendor_bills_total"/>
+                                </group>
+                                <group>
+                                    <field name="vendor_skonto_received"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Costs" name="costs">
+                            <group>
+                                <group>
+                                    <field name="total_costs_net"/>
+                                    <field name="total_costs_with_tax"/>
+                                </group>
+                                <group>
+                                    <field name="total_hours_booked"/>
+                                    <field name="labor_costs"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Profitability" name="profitability">
+                            <group>
+                                <group>
+                                    <field name="profit_loss" class="text-success" widget="monetary"/>
+                                    <field name="negative_difference"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
     <!-- Window action for project analytics -->
     <record id="action_project_analytics_report" model="ir.actions.act_window">
-        <field name="name">Project Analytics</field>
+        <field name="name">Project Statistic</field>
         <field name="res_model">project.project</field>
-        <field name="view_mode">list,pivot</field>
+        <field name="view_mode">list,pivot,graph,form</field>
         <field name="view_ids" eval="[
       (5, 0, 0),
       (0, 0, {'view_mode': 'list', 'view_id': ref('view_project_list_account_analytics')}),
-      (0, 0, {'view_mode': 'pivot', 'view_id': ref('view_project_pivot_account_analytics')})
+      (0, 0, {'view_mode': 'pivot', 'view_id': ref('view_project_pivot_account_analytics')}),
+      (0, 0, {'view_mode': 'graph', 'view_id': ref('view_project_graph_account_analytics')}),
+      (0, 0, {'view_mode': 'form', 'view_id': ref('view_project_form_account_analytics')})
     ]"/>
         <field name="domain">[]</field>
         <field name="context">{}</field>
