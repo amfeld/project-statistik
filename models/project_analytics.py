@@ -17,16 +17,22 @@ class ProjectAnalytics(models.Model):
     customer_invoiced_amount = fields.Float(
         string='Total Invoiced Amount',
         compute='_compute_financial_data',
+        store=True,
+        group_operator='sum',
         help="Total amount invoiced to customers for this project"
     )
     customer_paid_amount = fields.Float(
         string='Total Paid Amount',
         compute='_compute_financial_data',
+        store=True,
+        group_operator='sum',
         help="Total amount actually paid by customers"
     )
     customer_outstanding_amount = fields.Float(
         string='Outstanding Amount',
         compute='_compute_financial_data',
+        store=True,
+        group_operator='sum',
         help="Amount still owed by customers (Invoiced - Paid)"
     )
 
@@ -34,6 +40,8 @@ class ProjectAnalytics(models.Model):
     vendor_bills_total = fields.Float(
         string='Vendor Bills Total',
         compute='_compute_financial_data',
+        store=True,
+        group_operator='sum',
         help="Total amount of vendor bills for this project"
     )
 
@@ -41,11 +49,15 @@ class ProjectAnalytics(models.Model):
     customer_skonto_taken = fields.Float(
         string='Customer Cash Discounts (Skonto)',
         compute='_compute_financial_data',
+        store=True,
+        group_operator='sum',
         help="Cash discounts taken by customers on early payment (Gewährte Skonti)"
     )
     vendor_skonto_received = fields.Float(
         string='Vendor Cash Discounts Received',
         compute='_compute_financial_data',
+        store=True,
+        group_operator='sum',
         help="Cash discounts received from vendors on early payment (Erhaltene Skonti)"
     )
 
@@ -53,11 +65,15 @@ class ProjectAnalytics(models.Model):
     total_costs_net = fields.Float(
         string='Net Costs (without tax)',
         compute='_compute_financial_data',
+        store=True,
+        group_operator='sum',
         help="Labor costs + other costs (without vendor bills)"
     )
     total_costs_with_tax = fields.Float(
         string='Total Costs (with tax)',
         compute='_compute_financial_data',
+        store=True,
+        group_operator='sum',
         help="Net costs with tax included"
     )
 
@@ -65,11 +81,15 @@ class ProjectAnalytics(models.Model):
     profit_loss = fields.Float(
         string='Profit/Loss Amount',
         compute='_compute_financial_data',
+        store=True,
+        group_operator='sum',
         help="Revenue minus all costs"
     )
     negative_difference = fields.Float(
         string='Negative Differences (losses)',
         compute='_compute_financial_data',
+        store=True,
+        group_operator='sum',
         help="Absolute value of losses"
     )
 
@@ -77,11 +97,15 @@ class ProjectAnalytics(models.Model):
     total_hours_booked = fields.Float(
         string='Total Hours Booked',
         compute='_compute_financial_data',
+        store=True,
+        group_operator='sum',
         help="Total hours logged in timesheets for this project"
     )
     labor_costs = fields.Float(
         string='Labor Costs',
         compute='_compute_financial_data',
+        store=True,
+        group_operator='sum',
         help="Total cost of labor based on timesheets"
     )
 
@@ -90,6 +114,7 @@ class ProjectAnalytics(models.Model):
         for record in self:
             record.project_id_display = str(record.id)
 
+    @api.depends('sale_line_id', 'analytic_account_id')
     def _compute_financial_data(self):
         """
         Compute all financial data for the project based on analytic account lines (plan_id=1).
