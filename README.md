@@ -331,3 +331,161 @@ def uninstall_hook(env):
 - Professional module management
 
 **This module can be safely installed and uninstalled without leaving database artifacts!**
+---
+
+## 🔒 Security & Access Rights
+
+This module implements **Odoo v18 Enterprise standard accounting access rights**.
+
+### Access Control Groups
+
+The module uses Odoo's built-in accounting access groups:
+
+| Group | Access Level | Read | Write | Create | Delete |
+|-------|--------------|------|-------|--------|--------|
+| **Billing** (`account.group_account_invoice`) | Basic | ✅ | ❌ | ❌ | ❌ |
+| **Accountant** (`account.group_account_user`) | Standard | ✅ | ❌ | ❌ | ❌ |
+| **Accounting Manager** (`account.group_account_manager`) | Advanced | ✅ | ✅ | ❌ | ❌ |
+| **Advisor** (`account.group_account_readonly`) | Read-only | ✅ | ❌ | ❌ | ❌ |
+
+### What This Means
+
+**Users with accounting roles can:**
+- ✅ View project analytics data
+- ✅ See financial metrics (invoices, costs, profit)
+- ✅ Export data to Excel/CSV
+- ✅ Generate reports
+
+**Accounting Managers can also:**
+- ✅ Manually trigger analytics recalculation
+- ✅ Modify project settings (if needed)
+
+**Security Implementation:**
+```csv
+security/ir.model.access.csv
+- Leverages Odoo's enterprise accounting security groups
+- No custom security groups (uses standard Odoo)
+- Follows principle of least privilege
+```
+
+**Why Accounting Groups?**
+- Project analytics contains **sensitive financial data**
+- Only accounting staff should see profit/loss, costs, revenue
+- Standard Odoo enterprise security model
+- Integrates seamlessly with existing permissions
+
+---
+
+## 🧪 Automated Testing
+
+This module includes **comprehensive automated tests** to ensure reliability.
+
+### Test Coverage
+
+**6 Test Cases Included:**
+
+1. **test_01_project_without_analytic_account**
+   - Ensures projects without analytic accounts don't crash
+   - Validates graceful fallback behavior
+
+2. **test_02_customer_invoice_basic**
+   - Tests customer invoice calculation
+   - Validates invoiced and outstanding amounts
+
+3. **test_03_vendor_bill_basic**
+   - Tests vendor bill cost tracking
+   - Validates expense accumulation
+
+4. **test_04_skonto_customer_tracking**
+   - Tests customer Skonto detection (account 7300)
+   - Validates discount tracking
+
+5. **test_05_skonto_vendor_tracking**
+   - Tests vendor Skonto detection (account 4730)
+   - Validates discount receipt tracking
+
+6. **test_06_profit_calculation**
+   - Tests complete profit/loss formula
+   - Validates: Profit = Revenue - Costs - Skonto
+
+### Running Tests
+
+```bash
+# Run all module tests
+odoo-bin -c odoo.conf -d your_database -i project_analytics --test-enable --stop-after-init
+
+# Run specific test
+odoo-bin -c odoo.conf -d your_database --test-tags /project_analytics
+```
+
+### Test Structure
+
+```
+tests/
+├── __init__.py
+└── test_project_analytics.py  # All test cases
+```
+
+**Test Framework:** Odoo's built-in `TransactionCase`
+- Each test runs in isolated transaction
+- Database rolled back after each test
+- No test data pollution
+
+### CI/CD Integration
+
+These tests can be integrated into:
+- ✅ GitHub Actions
+- ✅ GitLab CI
+- ✅ Jenkins pipelines
+- ✅ Pre-commit hooks
+
+**Example CI command:**
+```yaml
+- name: Run Odoo tests
+  run: odoo-bin --test-enable --stop-after-init -i project_analytics
+```
+
+---
+
+## 📦 Module Structure
+
+```
+project_analytics/
+├── __init__.py                      # Module initialization + uninstall hook
+├── __manifest__.py                  # Module metadata & dependencies
+├── README.md                        # This documentation
+│
+├── data/
+│   └── menuitem.xml                 # Navigation menu items
+│
+├── models/
+│   ├── __init__.py
+│   └── project_analytics.py         # Core analytics logic
+│
+├── security/
+│   └── ir.model.access.csv          # Access rights (accounting groups)
+│
+├── tests/
+│   ├── __init__.py
+│   └── test_project_analytics.py    # Automated tests (6 test cases)
+│
+└── views/
+    └── project_analytics_views.xml  # UI: tree, form, filters
+```
+
+---
+
+## ✅ Production Readiness Checklist
+
+- ✅ **Core Functionality** - All calculations correct
+- ✅ **Error Handling** - Graceful fallbacks for missing data
+- ✅ **Security & Access Rights** - Odoo enterprise accounting groups
+- ✅ **Automated Tests** - 6 comprehensive test cases
+- ✅ **Clean Uninstall** - Proper uninstall_hook implementation
+- ✅ **Documentation** - Comprehensive README with examples
+- ✅ **Code Quality** - All syntax validated, well-commented
+- ✅ **German Accounting** - SKR03/04 compliant, Skonto tracking
+- ✅ **Performance** - Efficient queries, no N+1 problems
+- ✅ **Odoo v18 Compatible** - Uses latest Odoo standards
+
+**This module is now production-ready for professional deployment!** 🚀

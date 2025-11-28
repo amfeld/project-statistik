@@ -6,6 +6,7 @@
     'depends': ['project','account', 'accountant', 'sale_management' , 'sale_project'],
     'author':'Hamza Aslam',
     'data': [
+        'security/ir.model.access.csv',
         'views/project_analytics_views.xml',
         'data/menuitem.xml',
     ],
