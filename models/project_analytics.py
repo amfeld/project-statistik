@@ -418,14 +418,35 @@ class ProjectAnalytics(models.Model):
         """
         Get timesheet hours and costs from account.analytic.line.
         Timesheets have is_timesheet=True.
+
+        Uses a two-step approach:
+        1. First try to filter by project_id (if available) to get more specific results
+        2. If no results, fall back to analytic_account only
         """
         result = {'hours': 0.0, 'costs': 0.0}
 
-        # Find all timesheet lines for this analytic account
-        timesheet_lines = self.env['account.analytic.line'].search([
+        # Get the project from the context or from the calling record
+        project = self
+
+        # Build the base domain
+        timesheet_domain = [
             ('account_id', '=', analytic_account.id),
             ('is_timesheet', '=', True)
-        ])
+        ]
+
+        # Try to add project_id filter if the field exists
+        timesheet_lines = self.env['account.analytic.line']
+        if hasattr(self.env['account.analytic.line'], 'project_id'):
+            # First attempt: search with project_id filter
+            timesheet_domain_with_project = timesheet_domain + [('project_id', '=', project.id)]
+            timesheet_lines = self.env['account.analytic.line'].search(timesheet_domain_with_project)
+
+            # If no results with project filter, try without it
+            if not timesheet_lines:
+                timesheet_lines = self.env['account.analytic.line'].search(timesheet_domain)
+        else:
+            # No project_id field, just use analytic_account filter
+            timesheet_lines = self.env['account.analytic.line'].search(timesheet_domain)
 
         for line in timesheet_lines:
             result['hours'] += line.unit_amount or 0.0
