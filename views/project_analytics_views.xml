@@ -189,7 +189,7 @@
     </record>
 
     <menuitem id="menu_project_analytics_main"
-              name="Project Reporting"
+              name="Projekt Statistik"
               parent="account.menu_accounting"
               sequence="25"
               groups="account.group_account_readonly"/>

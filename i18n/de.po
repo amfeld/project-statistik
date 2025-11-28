@@ -286,3 +286,43 @@ msgstr "Projektdetails"
 #: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_inherit_analytics_button
 msgid "Financial Analytics"
 msgstr "Finanzanalyse"
+
+#. module: project_statistic
+#: model:ir.ui.menu,name:project_statistic.menu_project_analytics_main
+msgid "Projekt Statistik"
+msgstr "Projekt Statistik"
+
+#. module: project_statistic
+#: model:ir.ui.menu,name:project_statistic.menu_project_analytics_dashboard
+msgid "Dashboard"
+msgstr "Dashboard"
+
+#. module: project_statistic
+#: model:ir.actions.act_window,name:project_statistic.action_project_analytics_report
+msgid "Project Statistic"
+msgstr "Projektstatistik"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_list_account_analytics
+msgid "Refresh Financial Data"
+msgstr "Finanzdaten aktualisieren"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
+msgid "Refresh Data"
+msgstr "Daten aktualisieren"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
+msgid "Customer Invoices"
+msgstr "Kundenrechnungen"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
+msgid "Costs"
+msgstr "Kosten"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
+msgid "Profitability"
+msgstr "Rentabilität"
