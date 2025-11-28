@@ -9,12 +9,6 @@ class ProjectAnalytics(models.Model):
     _inherit = 'project.project'
     _description = _('Project Analytics Extension')
 
-    project_id_display = fields.Char(
-        string='Project ID',
-        compute='_compute_project_id_display',
-        store=True,
-        help="Unique identifier for this project"
-    )
     client_name = fields.Char(
         string='Name of Client',
         related='partner_id.name',
@@ -123,11 +117,6 @@ class ProjectAnalytics(models.Model):
         group_operator='sum',
         help="Total cost of labor based on timesheets (Personalkosten). Calculated from timesheet entries multiplied by employee hourly rates. This is a major component of internal project costs."
     )
-
-    @api.depends('project_id')
-    def _compute_project_id_display(self):
-        for record in self:
-            record.project_id_display = str(record.id)
 
     @api.depends('partner_id', 'user_id')
     def _compute_financial_data(self):

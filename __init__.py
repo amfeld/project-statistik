@@ -27,7 +27,6 @@ def uninstall_hook(env):
         'negative_difference',
         'total_hours_booked',
         'labor_costs',
-        'project_id_display',
         'client_name',
         'head_of_project'
     ]

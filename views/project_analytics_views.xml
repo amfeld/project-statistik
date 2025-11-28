@@ -5,7 +5,7 @@
         <field name="name">project.project.list.account.analytics</field>
         <field name="model">project.project</field>
         <field name="arch" type="xml">
-            <list string="Project Analytics" create="false" edit="false" delete="false" open_form_view="True" action="action_open_project_dashboard">
+            <list string="Project Analytics" create="false" edit="false" delete="false">
                 <field name="client_name" string="Name of Client"/>
                 <field name="name" string="Name of Project"/>
                 <field name="head_of_project" string="Head of Project"/>
