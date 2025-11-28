@@ -5,35 +5,35 @@
         <field name="name">project.project.list.account.analytics</field>
         <field name="model">project.project</field>
         <field name="arch" type="xml">
-            <list string="Project Analytics" create="false" edit="false" delete="false">
+            <list string="Projektstatistik" create="false" edit="false" delete="false">
                 <header>
-                    <button name="action_refresh_financial_data" type="object" string="Refresh Financial Data" class="btn-primary"/>
+                    <button name="action_refresh_financial_data" type="object" string="Finanzdaten aktualisieren" class="btn-primary"/>
                 </header>
-                <field name="client_name" string="Name of Client"/>
-                <field name="name" string="Name of Project"/>
-                <field name="head_of_project" string="Head of Project"/>
+                <field name="client_name"/>
+                <field name="name"/>
+                <field name="head_of_project"/>
 
                 <!-- Customer Invoice Fields -->
-                <field name="customer_invoiced_amount" string="Total Invoiced Amount" sum="Total Invoiced" optional="show"/>
-                <field name="customer_paid_amount" string="Total Paid Amount" sum="Total Paid" optional="show"/>
-                <field name="customer_outstanding_amount" string="Outstanding Amount" sum="Total Outstanding" optional="show" decoration-danger="customer_outstanding_amount != 0"/>
-                <field name="customer_skonto_taken" string="Customer Cash Discounts (Skonto)" sum="Total Skonto Given" optional="hide"/>
+                <field name="customer_invoiced_amount" sum="Gesamt in Rechnung gestellt" optional="show"/>
+                <field name="customer_paid_amount" sum="Gesamt bezahlt" optional="show"/>
+                <field name="customer_outstanding_amount" sum="Gesamt ausstehend" optional="show" decoration-danger="customer_outstanding_amount != 0"/>
+                <field name="customer_skonto_taken" sum="Gesamt gewährte Skonti" optional="hide"/>
 
                 <!-- Vendor Bills -->
-                <field name="vendor_bills_total" string="Vendor Bills Total" sum="Total Vendor Bills" optional="show"/>
-                <field name="vendor_skonto_received" string="Vendor Cash Discounts Received" sum="Total Skonto Received" optional="hide"/>
+                <field name="vendor_bills_total" sum="Gesamt Lieferantenrechnungen" optional="show"/>
+                <field name="vendor_skonto_received" sum="Gesamt erhaltene Skonti" optional="hide"/>
 
                 <!-- Cost Fields -->
-                <field name="total_costs_net" string="Net Costs (without tax)" sum="Total Costs Net" optional="show"/>
-                <field name="total_costs_with_tax" string="Total Costs (with tax)" sum="Total Costs with Tax" optional="hide"/>
+                <field name="total_costs_net" sum="Gesamtkosten Netto" optional="show"/>
+                <field name="total_costs_with_tax" sum="Gesamtkosten mit Steuer" optional="hide"/>
 
                 <!-- Profitability -->
-                <field name="profit_loss" string="Profit/Loss Amount" sum="Total Profit/Loss" optional="show" decoration-success="profit_loss &gt; 0" decoration-danger="profit_loss &lt; 0"/>
-                <field name="negative_difference" string="Negative Differences (losses)" sum="Total Losses" optional="hide"/>
+                <field name="profit_loss" sum="Gesamt Gewinn/Verlust" optional="show" decoration-success="profit_loss &gt; 0" decoration-danger="profit_loss &lt; 0"/>
+                <field name="negative_difference" sum="Gesamtverluste" optional="hide"/>
 
                 <!-- Labor -->
-                <field name="total_hours_booked" string="Total Hours Booked" sum="Total Hours" optional="show"/>
-                <field name="labor_costs" string="Labor Costs" sum="Total Labor Costs" optional="show"/>
+                <field name="total_hours_booked" sum="Gesamt Stunden" optional="show"/>
+                <field name="labor_costs" sum="Gesamtpersonalkosten" optional="show"/>
             </list>
         </field>
     </record>
@@ -42,7 +42,7 @@
         <field name="name">project.project.pivot.account.analytics</field>
         <field name="model">project.project</field>
         <field name="arch" type="xml">
-            <pivot string="Project Analytics Pivot">
+            <pivot string="Projektstatistik Pivot">
                 <!-- Customer Invoice Measures -->
                 <field name="customer_invoiced_amount" type="measure"/>
                 <field name="customer_paid_amount" type="measure"/>
@@ -83,7 +83,7 @@
         <field name="name">project.project.graph.account.analytics</field>
         <field name="model">project.project</field>
         <field name="arch" type="xml">
-            <graph string="Project Analytics Graph" type="bar" sample="1">
+            <graph string="Projektstatistik Diagramm" type="bar" sample="1">
                 <field name="name"/>
                 <field name="customer_invoiced_amount" type="measure"/>
                 <field name="vendor_bills_total" type="measure"/>
@@ -97,12 +97,12 @@
         <field name="name">project.project.form.account.analytics</field>
         <field name="model">project.project</field>
         <field name="arch" type="xml">
-            <form string="Project Details" create="false" edit="false" delete="false">
+            <form string="Projektdetails" create="false" edit="false" delete="false">
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button name="action_view_account_analytic_line" type="object" class="oe_stat_button" icon="fa-pencil-square-o" string="Analytic Lines"/>
-                        <button name="action_open_standard_project_form" type="object" class="oe_stat_button" icon="fa-tasks" string="Project Details"/>
-                        <button name="action_refresh_financial_data" type="object" class="oe_stat_button" icon="fa-refresh" string="Refresh Data"/>
+                        <button name="action_view_account_analytic_line" type="object" class="oe_stat_button" icon="fa-pencil-square-o" string="Analytische Buchungen"/>
+                        <button name="action_open_standard_project_form" type="object" class="oe_stat_button" icon="fa-tasks" string="Projektdetails"/>
+                        <button name="action_refresh_financial_data" type="object" class="oe_stat_button" icon="fa-refresh" string="Daten aktualisieren"/>
                     </div>
                     <group>
                         <group name="project_info">
@@ -120,7 +120,7 @@
                         </group>
                     </group>
                     <notebook>
-                        <page string="Customer Invoices" name="customer_invoices">
+                        <page string="Kundenrechnungen" name="customer_invoices">
                             <group>
                                 <group>
                                     <field name="customer_invoiced_amount"/>
@@ -132,7 +132,7 @@
                                 </group>
                             </group>
                         </page>
-                        <page string="Vendor Bills" name="vendor_bills">
+                        <page string="Lieferantenrechnungen" name="vendor_bills">
                             <group>
                                 <group>
                                     <field name="vendor_bills_total"/>
@@ -142,7 +142,7 @@
                                 </group>
                             </group>
                         </page>
-                        <page string="Costs" name="costs">
+                        <page string="Kosten" name="costs">
                             <group>
                                 <group>
                                     <field name="total_costs_net"/>
@@ -154,7 +154,7 @@
                                 </group>
                             </group>
                         </page>
-                        <page string="Profitability" name="profitability">
+                        <page string="Rentabilität" name="profitability">
                             <group>
                                 <group>
                                     <field name="profit_loss" class="text-success" widget="monetary"/>
@@ -170,7 +170,7 @@
 
     <!-- Window action for project analytics -->
     <record id="action_project_analytics_report" model="ir.actions.act_window">
-        <field name="name">Project Statistic</field>
+        <field name="name">Projektstatistik</field>
         <field name="res_model">project.project</field>
         <field name="view_mode">list,pivot,graph,form</field>
         <field name="view_ids" eval="[
@@ -183,8 +183,8 @@
         <field name="domain">[]</field>
         <field name="context">{}</field>
         <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">No projects found</p>
-            <p>This view shows all projects for analytics and reporting purposes with detailed customer and vendor tracking.</p>
+            <p class="o_view_nocontent_smiling_face">Keine Projekte gefunden</p>
+            <p>Diese Ansicht zeigt alle Projekte für Analyse- und Berichtszwecke mit detaillierter Kunden- und Lieferantenverfolgung.</p>
         </field>
     </record>
 
@@ -212,7 +212,7 @@
                         type="object"
                         class="oe_stat_button"
                         icon="fa-line-chart"
-                        string="Financial Analytics"
+                        string="Finanzanalyse"
                         groups="account.group_account_readonly"/>
             </xpath>
         </field>
