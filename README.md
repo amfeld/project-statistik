@@ -39,10 +39,11 @@ For each project, it shows:
 | Labor Costs | **WITHOUT TAX** 🔵 | Net labor costs |
 | Net Costs | **WITHOUT TAX** 🔵 | Labor + other costs (net) |
 | Total Costs (with tax) | **WITH TAX** 🟢 | Net costs + calculated VAT |
-| Profit/Loss Amount | **MIXED** ⚠️ | Invoiced (gross) - Vendor Bills (gross) - Net Costs (net) |
+| Profit/Loss Amount | **MIXED** ⚠️ | (Invoiced - Customer Skonto) - (Vendor Bills - Vendor Skonto) - Net Costs |
 
 **Important Notes:**
-- **Profit/Loss Formula:** `customer_invoiced_amount (gross) - vendor_bills_total (gross) - total_costs_net (net)`
+- **Profit/Loss Formula:** `(customer_invoiced_amount - customer_skonto_taken) - (vendor_bills_total - vendor_skonto_received) - total_costs_net`
+- **Formula accounts for Skonto (cash discounts)** to show true profit after early payment discounts
 - Revenue (invoiced/paid) uses **line.price_total** which includes taxes
 - Vendor bills use **line.price_total** which includes taxes
 - Internal costs (labor, other) are typically **net amounts** from analytic lines
@@ -257,14 +258,16 @@ COSTS:
 - Net costs total: €2,500 (net = labor + other)
 - Total costs with tax: €2,975 (net + calculated VAT on applicable items)
 
-PROFITABILITY (ACCRUAL BASIS):
-- Profit/Loss: €10,000 (gross invoiced) - €3,000 (gross vendor bills) - €2,500 (net costs) = €4,500 profit
+PROFITABILITY (ACCRUAL BASIS WITH SKONTO):
+- Base calculation: €10,000 (gross invoiced) - €3,000 (gross vendor bills) - €2,500 (net costs)
+- With Skonto adjustments (if any): Accounts for early payment discounts given/received
+- Result: €4,500 profit (before considering taxes on internal costs)
 
 BREAKDOWN:
-- We compare GROSS revenue (€10,000)
-- Against GROSS vendor bills (€3,000)
+- We compare GROSS revenue (€10,000) minus any customer Skonto taken
+- Against GROSS vendor bills (€3,000) minus any vendor Skonto received
 - Against NET internal costs (€2,500)
-- Result: €4,500 profit (before considering taxes on internal costs)
+- Result: True profit after accounting for all discounts and costs
 ```
 
 **Why This Makes Sense:**
