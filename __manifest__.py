@@ -15,7 +15,8 @@
     """,
     'depends': [
         'project',
-        'account_accountant',  # Full accounting module with menu_accounting
+        'account',
+        'accountant', 
         'analytic',
         'hr_timesheet',
     ],
