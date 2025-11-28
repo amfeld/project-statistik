@@ -13,7 +13,7 @@
         - Profit/loss calculations
         - Labor cost tracking from timesheets
     """,
-    'depends': ['project', 'account', 'accountant', 'analytic', 'sale_management', 'sale_project', 'hr_timesheet'],
+    'depends': ['project', 'account', 'analytic', 'sale_management', 'sale_project', 'hr_timesheet'],
     'author': 'Alex Feld',
     'license': 'LGPL-3',
     'data': [
