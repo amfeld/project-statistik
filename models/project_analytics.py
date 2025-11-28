@@ -454,3 +454,19 @@ class ProjectAnalytics(models.Model):
                         total_costs_with_tax += tax.amount
 
         return total_costs_with_tax
+
+    def action_open_project_dashboard(self):
+        """
+        Open the standard project dashboard/form view for this project.
+        Called when clicking a row in the analytics list view.
+        """
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': self.name,
+            'res_model': 'project.project',
+            'res_id': self.id,
+            'view_mode': 'form',
+            'view_id': False,  # Use default project form view
+            'target': 'current',
+        }
