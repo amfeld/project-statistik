@@ -13,7 +13,7 @@
                 <!-- Customer Invoice Fields -->
                 <field name="customer_invoiced_amount" string="Total Invoiced Amount" sum="Total Invoiced" optional="show"/>
                 <field name="customer_paid_amount" string="Total Paid Amount" sum="Total Paid" optional="show"/>
-                <field name="customer_outstanding_amount" string="Outstanding Amount" sum="Total Outstanding" optional="show"/>
+                <field name="customer_outstanding_amount" string="Outstanding Amount" sum="Total Outstanding" optional="show" decoration-danger="customer_outstanding_amount != 0"/>
                 <field name="customer_skonto_taken" string="Customer Cash Discounts (Skonto)" sum="Total Skonto Given" optional="hide"/>
 
                 <!-- Vendor Bills -->
@@ -25,7 +25,7 @@
                 <field name="total_costs_with_tax" string="Total Costs (with tax)" sum="Total Costs with Tax" optional="hide"/>
 
                 <!-- Profitability -->
-                <field name="profit_loss" string="Profit/Loss Amount" sum="Total Profit/Loss" optional="show"/>
+                <field name="profit_loss" string="Profit/Loss Amount" sum="Total Profit/Loss" optional="show" decoration-success="profit_loss &gt; 0" decoration-danger="profit_loss &lt; 0"/>
                 <field name="negative_difference" string="Negative Differences (losses)" sum="Total Losses" optional="hide"/>
 
                 <!-- Labor -->
