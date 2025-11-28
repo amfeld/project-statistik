@@ -25,9 +25,36 @@ msgid "Project Analytics"
 msgstr "Projektstatistik"
 
 #. module: project_statistic
+#: model:ir.model.fields,field_description:project_statistic.field_project_project__project_id_display
+msgid "Project ID"
+msgstr "Projekt-ID"
+
+#. module: project_statistic
+#: model:ir.model.fields,help:project_statistic.field_project_project__project_id_display
+msgid "Unique identifier for this project"
+msgstr "Eindeutige Kennung für dieses Projekt"
+
+#. module: project_statistic
+#: model:ir.model.fields,field_description:project_statistic.field_project_project__client_name
 #: model_terms:ir.ui.view,arch_db:project_statistic.view_project_list_account_analytics
 msgid "Name of Client"
 msgstr "Name des Auftraggebers"
+
+#. module: project_statistic
+#: model:ir.model.fields,help:project_statistic.field_project_project__client_name
+msgid "The customer/client this project is for. This is automatically filled from the project's partner."
+msgstr "Der Kunde/Auftraggeber für dieses Projekt. Wird automatisch vom Projektpartner übernommen."
+
+#. module: project_statistic
+#: model:ir.model.fields,field_description:project_statistic.field_project_project__head_of_project
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_list_account_analytics
+msgid "Head of Project"
+msgstr "Projektleiter"
+
+#. module: project_statistic
+#: model:ir.model.fields,help:project_statistic.field_project_project__head_of_project
+msgid "The person responsible for managing this project. This is the project manager assigned to the project."
+msgstr "Die verantwortliche Person für die Verwaltung dieses Projekts. Dies ist der dem Projekt zugewiesene Projektmanager."
 
 #. module: project_statistic
 #: model_terms:ir.ui.view,arch_db:project_statistic.view_project_list_account_analytics
@@ -35,14 +62,14 @@ msgid "Name of Project"
 msgstr "Name des Projekts"
 
 #. module: project_statistic
-#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_list_account_analytics
-msgid "Head of Project"
-msgstr "Projektleiter"
-
-#. module: project_statistic
 #: model:ir.model.fields,field_description:project_statistic.field_project_project__customer_invoiced_amount
 msgid "Total Invoiced Amount"
 msgstr "Gesamtrechnungsbetrag"
+
+#. module: project_statistic
+#: model:ir.model.fields,help:project_statistic.field_project_project__customer_invoiced_amount
+msgid "Total amount invoiced to customers for this project. This includes all posted customer invoices and credit notes that are linked to this project via analytic distribution."
+msgstr "Gesamtrechnungsbetrag an Kunden für dieses Projekt. Dies umfasst alle gebuchten Kundenrechnungen und Gutschriften, die über die analytische Verteilung mit diesem Projekt verknüpft sind."
 
 #. module: project_statistic
 #: model:ir.model.fields,field_description:project_statistic.field_project_project__customer_paid_amount
@@ -50,9 +77,19 @@ msgid "Total Paid Amount"
 msgstr "Gesamtzahlungsbetrag"
 
 #. module: project_statistic
+#: model:ir.model.fields,help:project_statistic.field_project_project__customer_paid_amount
+msgid "Total amount actually paid by customers for this project. This is calculated from invoice payments and shows how much money has actually been received."
+msgstr "Tatsächlich von Kunden gezahlter Gesamtbetrag für dieses Projekt. Wird aus Rechnungszahlungen berechnet und zeigt, wie viel Geld tatsächlich eingegangen ist."
+
+#. module: project_statistic
 #: model:ir.model.fields,field_description:project_statistic.field_project_project__customer_outstanding_amount
 msgid "Outstanding Amount"
 msgstr "Offener Betrag"
+
+#. module: project_statistic
+#: model:ir.model.fields,help:project_statistic.field_project_project__customer_outstanding_amount
+msgid "Amount still owed by customers for this project. This is the difference between what has been invoiced and what has been paid (Invoiced - Paid). A positive value means money is still owed."
+msgstr "Von Kunden für dieses Projekt noch geschuldeter Betrag. Dies ist die Differenz zwischen dem in Rechnung gestellten und dem gezahlten Betrag (Rechnung - Zahlung). Ein positiver Wert bedeutet, dass noch Geld geschuldet wird."
 
 #. module: project_statistic
 #: model:ir.model.fields,field_description:project_statistic.field_project_project__customer_skonto_taken
@@ -60,9 +97,19 @@ msgid "Customer Cash Discounts (Skonto)"
 msgstr "Kundenskonto (Rabatte)"
 
 #. module: project_statistic
+#: model:ir.model.fields,help:project_statistic.field_project_project__customer_skonto_taken
+msgid "Cash discounts granted to customers for early payment (Gewährte Skonti). This reduces project revenue. Calculated from expense accounts 7300-7303 and liability account 2130."
+msgstr "Skonti, die Kunden für vorzeitige Zahlung gewährt werden (Gewährte Skonti). Dies reduziert den Projektumsatz. Berechnet aus Aufwandskonten 7300-7303 und Verbindlichkeitskonto 2130."
+
+#. module: project_statistic
 #: model:ir.model.fields,field_description:project_statistic.field_project_project__vendor_bills_total
 msgid "Vendor Bills Total"
 msgstr "Lieferantenrechnungen Gesamt"
+
+#. module: project_statistic
+#: model:ir.model.fields,help:project_statistic.field_project_project__vendor_bills_total
+msgid "Total amount of vendor bills (Lieferantenrechnungen) for this project. This includes all posted vendor bills and refunds linked to this project via analytic distribution. These are external costs from suppliers."
+msgstr "Gesamtbetrag der Lieferantenrechnungen für dieses Projekt. Dies umfasst alle gebuchten Lieferantenrechnungen und Gutschriften, die über die analytische Verteilung mit diesem Projekt verknüpft sind. Dies sind externe Kosten von Lieferanten."
 
 #. module: project_statistic
 #: model:ir.model.fields,field_description:project_statistic.field_project_project__vendor_skonto_received
@@ -70,9 +117,19 @@ msgid "Vendor Cash Discounts Received"
 msgstr "Erhaltene Lieferantenskonti"
 
 #. module: project_statistic
+#: model:ir.model.fields,help:project_statistic.field_project_project__vendor_skonto_received
+msgid "Cash discounts received from vendors for early payment (Erhaltene Skonti). This reduces project costs and increases profit. Calculated from income accounts 4730-4733 and asset account 2670."
+msgstr "Skonti, die von Lieferanten für vorzeitige Zahlung erhalten werden (Erhaltene Skonti). Dies reduziert die Projektkosten und erhöht den Gewinn. Berechnet aus Ertragskonten 4730-4733 und Aktivkonto 2670."
+
+#. module: project_statistic
 #: model:ir.model.fields,field_description:project_statistic.field_project_project__total_costs_net
 msgid "Net Costs (without tax)"
 msgstr "Nettokosten (ohne Steuer)"
+
+#. module: project_statistic
+#: model:ir.model.fields,help:project_statistic.field_project_project__total_costs_net
+msgid "Internal project costs without tax (Nettokosten). This includes labor costs from timesheets plus other internal costs. Vendor bills are tracked separately. This is the net amount before tax."
+msgstr "Interne Projektkosten ohne Steuer (Nettokosten). Dies umfasst Personalkosten aus Zeiterfassungen plus andere interne Kosten. Lieferantenrechnungen werden separat erfasst. Dies ist der Nettobetrag vor Steuern."
 
 #. module: project_statistic
 #: model:ir.model.fields,field_description:project_statistic.field_project_project__total_costs_with_tax
@@ -80,9 +137,19 @@ msgid "Total Costs (with tax)"
 msgstr "Gesamtkosten (mit Steuer)"
 
 #. module: project_statistic
+#: model:ir.model.fields,help:project_statistic.field_project_project__total_costs_with_tax
+msgid "Internal project costs with tax included (Bruttokosten). This is the total internal costs including VAT. Vendor bills are tracked separately and already include their taxes."
+msgstr "Interne Projektkosten mit Steuer (Bruttokosten). Dies sind die gesamten internen Kosten einschließlich Mehrwertsteuer. Lieferantenrechnungen werden separat erfasst und enthalten bereits ihre Steuern."
+
+#. module: project_statistic
 #: model:ir.model.fields,field_description:project_statistic.field_project_project__profit_loss
 msgid "Profit/Loss Amount"
 msgstr "Gewinn/Verlust"
+
+#. module: project_statistic
+#: model:ir.model.fields,help:project_statistic.field_project_project__profit_loss
+msgid "Project profitability (Gewinn/Verlust). Calculated as: (Invoiced Amount - Customer Skonto) - (Vendor Bills - Vendor Skonto + Internal Net Costs). A positive value indicates profit, negative indicates loss."
+msgstr "Projektrentabilität (Gewinn/Verlust). Berechnet als: (Rechnungsbetrag - Kundenskonto) - (Lieferantenrechnungen - Lieferantenskonto + Interne Nettokosten). Ein positiver Wert zeigt Gewinn, ein negativer Verlust an."
 
 #. module: project_statistic
 #: model:ir.model.fields,field_description:project_statistic.field_project_project__negative_difference
@@ -90,9 +157,19 @@ msgid "Negative Differences (losses)"
 msgstr "Negative Differenzen (Verluste)"
 
 #. module: project_statistic
+#: model:ir.model.fields,help:project_statistic.field_project_project__negative_difference
+msgid "Total project losses as a positive number (Verluste). This shows the absolute value of negative profit/loss. If profit/loss is positive, this field is 0. Useful for tracking and reporting total losses."
+msgstr "Gesamtprojektverluste als positive Zahl (Verluste). Zeigt den Absolutwert von negativem Gewinn/Verlust. Wenn Gewinn/Verlust positiv ist, ist dieses Feld 0. Nützlich zur Verfolgung und Berichterstattung von Gesamtverlusten."
+
+#. module: project_statistic
 #: model:ir.model.fields,field_description:project_statistic.field_project_project__total_hours_booked
 msgid "Total Hours Booked"
 msgstr "Gebuchte Stunden Gesamt"
+
+#. module: project_statistic
+#: model:ir.model.fields,help:project_statistic.field_project_project__total_hours_booked
+msgid "Total hours logged in timesheets for this project (Gebuchte Stunden). This includes all timesheet entries from employees working on this project. Used to track resource utilization and calculate labor costs."
+msgstr "Gesamtstunden in Zeiterfassungen für dieses Projekt (Gebuchte Stunden). Dies umfasst alle Zeiterfassungseinträge von Mitarbeitern, die an diesem Projekt arbeiten. Wird zur Verfolgung der Ressourcenauslastung und Berechnung der Personalkosten verwendet."
 
 #. module: project_statistic
 #: model:ir.model.fields,field_description:project_statistic.field_project_project__labor_costs
@@ -100,19 +177,19 @@ msgid "Labor Costs"
 msgstr "Personalkosten"
 
 #. module: project_statistic
-#: model:ir.model.fields,field_description:project_statistic.field_project_project__project_id_display
-msgid "Project ID"
-msgstr "Projekt-ID"
+#: model:ir.model.fields,help:project_statistic.field_project_project__labor_costs
+msgid "Total cost of labor based on timesheets (Personalkosten). Calculated from timesheet entries multiplied by employee hourly rates. This is a major component of internal project costs."
+msgstr "Gesamtkosten der Arbeit basierend auf Zeiterfassungen (Personalkosten). Berechnet aus Zeiterfassungseinträgen multipliziert mit Mitarbeiter-Stundensätzen. Dies ist eine Hauptkomponente der internen Projektkosten."
 
 #. module: project_statistic
-#: model:ir.model.fields,field_description:project_statistic.field_project_project__client_name
-msgid "Name of Client"
-msgstr "Name des Auftraggebers"
+#: model:ir.model.fields,field_description:project_statistic.field_project_project__project_id
+msgid "Project"
+msgstr "Projekt"
 
 #. module: project_statistic
-#: model:ir.model.fields,field_description:project_statistic.field_project_project__head_of_project
-msgid "Head of Project"
-msgstr "Projektleiter"
+#: model:ir.model.fields,help:project_statistic.field_project_project__project_id
+msgid "Reference to the project record"
+msgstr "Verweis auf den Projektdatensatz"
 
 #. module: project_statistic
 #: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
@@ -123,26 +200,6 @@ msgstr "Projektdetails"
 #: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
 msgid "Analytic Lines"
 msgstr "Analytische Buchungen"
-
-#. module: project_statistic
-#: model:ir.model.fields,help:project_statistic.field_project_project__customer_invoiced_amount
-msgid "Total amount invoiced to customers for this project"
-msgstr "Gesamtrechnungsbetrag an Kunden für dieses Projekt"
-
-#. module: project_statistic
-#: model:ir.model.fields,help:project_statistic.field_project_project__customer_paid_amount
-msgid "Total amount actually paid by customers"
-msgstr "Tatsächlich von Kunden gezahlter Gesamtbetrag"
-
-#. module: project_statistic
-#: model:ir.model.fields,help:project_statistic.field_project_project__customer_outstanding_amount
-msgid "Amount still owed by customers (Invoiced - Paid)"
-msgstr "Von Kunden noch geschuldeter Betrag (Rechnung - Zahlung)"
-
-#. module: project_statistic
-#: model:ir.model.fields,help:project_statistic.field_project_project__vendor_bills_total
-msgid "Total amount of vendor bills for this project"
-msgstr "Gesamtbetrag der Lieferantenrechnungen für dieses Projekt"
 
 #. module: project_statistic
 #: model_terms:ir.ui.view,arch_db:project_statistic.view_project_graph_account_analytics
@@ -174,3 +231,58 @@ msgstr "Kosten & Rentabilität"
 #: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
 msgid "Labor"
 msgstr "Personal"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_list_account_analytics
+msgid "Total Invoiced"
+msgstr "Gesamt in Rechnung gestellt"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_list_account_analytics
+msgid "Total Paid"
+msgstr "Gesamt bezahlt"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_list_account_analytics
+msgid "Total Outstanding"
+msgstr "Gesamt ausstehend"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_list_account_analytics
+msgid "Total Skonto Given"
+msgstr "Gesamt gewährte Skonti"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_list_account_analytics
+msgid "Total Vendor Bills"
+msgstr "Gesamt Lieferantenrechnungen"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_list_account_analytics
+msgid "Total Skonto Received"
+msgstr "Gesamt erhaltene Skonti"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_list_account_analytics
+msgid "Total Costs Net"
+msgstr "Gesamtkosten Netto"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_list_account_analytics
+msgid "Total Costs with Tax"
+msgstr "Gesamtkosten mit Steuer"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_list_account_analytics
+msgid "Total Profit/Loss"
+msgstr "Gesamt Gewinn/Verlust"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_list_account_analytics
+msgid "Total Losses"
+msgstr "Gesamtverluste"
+
+#. module: project_statistic
+#: model:ir.actions.act_window,name:project_statistic.action_project_analytics
+msgid "Project Analytics"
+msgstr "Projektstatistik"

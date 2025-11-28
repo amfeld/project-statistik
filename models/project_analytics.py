@@ -9,10 +9,30 @@ class ProjectAnalytics(models.Model):
     _inherit = 'project.project'
     _description = 'Project Analytics Extension'
 
-    project_id_display = fields.Char(string='Project ID', compute='_compute_project_id_display', store=True)
-    client_name = fields.Char(string='Name of Client', related='partner_id.name', store=True)
-    head_of_project = fields.Char(string='Head of Project', related='user_id.name', store=True)
-    project_id = fields.Many2one("project.project", string="Project", readonly=True)
+    project_id_display = fields.Char(
+        string='Project ID',
+        compute='_compute_project_id_display',
+        store=True,
+        help="Unique identifier for this project"
+    )
+    client_name = fields.Char(
+        string='Name of Client',
+        related='partner_id.name',
+        store=True,
+        help="The customer/client this project is for. This is automatically filled from the project's partner."
+    )
+    head_of_project = fields.Char(
+        string='Head of Project',
+        related='user_id.name',
+        store=True,
+        help="The person responsible for managing this project. This is the project manager assigned to the project."
+    )
+    project_id = fields.Many2one(
+        "project.project",
+        string="Project",
+        readonly=True,
+        help="Reference to the project record"
+    )
 
     # Customer Invoice fields
     customer_invoiced_amount = fields.Float(
@@ -20,21 +40,21 @@ class ProjectAnalytics(models.Model):
         compute='_compute_financial_data',
         store=True,
         group_operator='sum',
-        help="Total amount invoiced to customers for this project"
+        help="Total amount invoiced to customers for this project. This includes all posted customer invoices and credit notes that are linked to this project via analytic distribution."
     )
     customer_paid_amount = fields.Float(
         string='Total Paid Amount',
         compute='_compute_financial_data',
         store=True,
         group_operator='sum',
-        help="Total amount actually paid by customers"
+        help="Total amount actually paid by customers for this project. This is calculated from invoice payments and shows how much money has actually been received."
     )
     customer_outstanding_amount = fields.Float(
         string='Outstanding Amount',
         compute='_compute_financial_data',
         store=True,
         group_operator='sum',
-        help="Amount still owed by customers (Invoiced - Paid)"
+        help="Amount still owed by customers for this project. This is the difference between what has been invoiced and what has been paid (Invoiced - Paid). A positive value means money is still owed."
     )
 
     # Vendor Bill fields
@@ -43,7 +63,7 @@ class ProjectAnalytics(models.Model):
         compute='_compute_financial_data',
         store=True,
         group_operator='sum',
-        help="Total amount of vendor bills for this project"
+        help="Total amount of vendor bills (Lieferantenrechnungen) for this project. This includes all posted vendor bills and refunds linked to this project via analytic distribution. These are external costs from suppliers."
     )
 
     # Skonto (Cash Discount) fields
@@ -52,14 +72,14 @@ class ProjectAnalytics(models.Model):
         compute='_compute_financial_data',
         store=True,
         group_operator='sum',
-        help="Cash discounts taken by customers on early payment (Gewährte Skonti)"
+        help="Cash discounts granted to customers for early payment (Gewährte Skonti). This reduces project revenue. Calculated from expense accounts 7300-7303 and liability account 2130."
     )
     vendor_skonto_received = fields.Float(
         string='Vendor Cash Discounts Received',
         compute='_compute_financial_data',
         store=True,
         group_operator='sum',
-        help="Cash discounts received from vendors on early payment (Erhaltene Skonti)"
+        help="Cash discounts received from vendors for early payment (Erhaltene Skonti). This reduces project costs and increases profit. Calculated from income accounts 4730-4733 and asset account 2670."
     )
 
     # Cost fields
@@ -68,14 +88,14 @@ class ProjectAnalytics(models.Model):
         compute='_compute_financial_data',
         store=True,
         group_operator='sum',
-        help="Labor costs + other costs (without vendor bills)"
+        help="Internal project costs without tax (Nettokosten). This includes labor costs from timesheets plus other internal costs. Vendor bills are tracked separately. This is the net amount before tax."
     )
     total_costs_with_tax = fields.Float(
         string='Total Costs (with tax)',
         compute='_compute_financial_data',
         store=True,
         group_operator='sum',
-        help="Net costs with tax included"
+        help="Internal project costs with tax included (Bruttokosten). This is the total internal costs including VAT. Vendor bills are tracked separately and already include their taxes."
     )
 
     # Summary fields
@@ -84,14 +104,14 @@ class ProjectAnalytics(models.Model):
         compute='_compute_financial_data',
         store=True,
         group_operator='sum',
-        help="Revenue minus all costs"
+        help="Project profitability (Gewinn/Verlust). Calculated as: (Invoiced Amount - Customer Skonto) - (Vendor Bills - Vendor Skonto + Internal Net Costs). A positive value indicates profit, negative indicates loss."
     )
     negative_difference = fields.Float(
         string='Negative Differences (losses)',
         compute='_compute_financial_data',
         store=True,
         group_operator='sum',
-        help="Absolute value of losses"
+        help="Total project losses as a positive number (Verluste). This shows the absolute value of negative profit/loss. If profit/loss is positive, this field is 0. Useful for tracking and reporting total losses."
     )
 
     # Labor/Timesheet fields
@@ -100,14 +120,14 @@ class ProjectAnalytics(models.Model):
         compute='_compute_financial_data',
         store=True,
         group_operator='sum',
-        help="Total hours logged in timesheets for this project"
+        help="Total hours logged in timesheets for this project (Gebuchte Stunden). This includes all timesheet entries from employees working on this project. Used to track resource utilization and calculate labor costs."
     )
     labor_costs = fields.Float(
         string='Labor Costs',
         compute='_compute_financial_data',
         store=True,
         group_operator='sum',
-        help="Total cost of labor based on timesheets"
+        help="Total cost of labor based on timesheets (Personalkosten). Calculated from timesheet entries multiplied by employee hourly rates. This is a major component of internal project costs."
     )
 
     @api.depends('project_id')
