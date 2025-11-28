@@ -74,14 +74,20 @@ Skonto received: €100 (booked to account 4730 "Erhaltene Skonti")
 
 ### How It Works
 
-The module analyzes **reconciled payment entries** to automatically detect Skonto:
+The module queries **analytic lines directly from Skonto accounts**:
 
-1. **Finds the receivable/payable line** on each invoice/bill
-2. **Analyzes reconciliation** via `matched_debit_ids` and `matched_credit_ids`
-3. **Identifies Skonto entries** by checking account codes:
+1. **Finds all analytic lines** for the project's analytic account
+2. **Filters by account code** to identify Skonto entries:
    - **Customer Skonto (Gewährte Skonti)**: Accounts 7300-7303
    - **Vendor Skonto (Erhaltene Skonti)**: Accounts 4730-4733
-4. **Calculates proportional Skonto** for each project based on analytic distribution
+3. **Sums up amounts** - Only Skonto entries with analytic distribution are included
+
+**Why This Approach:**
+- ✅ Simple and reliable - queries account.analytic.line directly
+- ✅ Uses Odoo's standard analytic distribution
+- ✅ Only tracks Skonto properly allocated to projects
+- ✅ Works with any payment method or reconciliation structure
+- ✅ No complex reconciliation analysis needed
 
 ### Impact on Profit Calculation
 
@@ -267,3 +273,60 @@ BREAKDOWN:
 - Outstanding amount (€2,000) shows cash flow needs
 
 This helps you instantly see which projects are profitable and which need attention!
+
+---
+
+## 🗑️ Module Uninstallation
+
+This module follows **Odoo best practices for clean uninstallation**.
+
+### What Happens on Uninstall
+
+When you uninstall this module, the `uninstall_hook` automatically:
+
+1. **Removes all computed stored fields** from the `project_project` table
+2. **Cleans up database columns** to prevent orphaned data
+3. **Ensures clean reinstallation** if you need to reinstall later
+
+### Fields Cleaned Up
+
+All computed fields with `store=True` are removed:
+- `customer_invoiced_amount`, `customer_paid_amount`, `customer_outstanding_amount`
+- `customer_skonto_taken`, `vendor_skonto_received`
+- `vendor_bills_total`
+- `total_costs_net`, `total_costs_with_tax`
+- `profit_loss`, `negative_difference`
+- `total_hours_booked`, `labor_costs`
+- `project_id_display`, `client_name`, `head_of_project`
+
+### How It Works
+
+**__init__.py:**
+```python
+def uninstall_hook(env):
+    # Drops all computed field columns from project_project table
+    env.cr.execute("ALTER TABLE project_project DROP COLUMN IF EXISTS ...")
+```
+
+**__manifest__.py:**
+```python
+{
+    'uninstall_hook': 'uninstall_hook',
+}
+```
+
+### Why This Matters
+
+❌ **Without uninstall_hook:**
+- Database columns remain after uninstall
+- Orphaned data clutters your database
+- Reinstalling may cause conflicts
+- Manual database cleanup needed
+
+✅ **With uninstall_hook:**
+- Complete cleanup on uninstall
+- No orphaned data
+- Clean slate for reinstallation
+- Professional module management
+
+**This module can be safely installed and uninstalled without leaving database artifacts!**

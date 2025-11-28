@@ -142,22 +142,25 @@ class ProjectAnalytics(models.Model):
             customer_data = self._get_customer_invoices_from_analytic(analytic_account)
             customer_invoiced_amount = customer_data['invoiced']
             customer_paid_amount = customer_data['paid']
-            customer_skonto_taken = customer_data.get('skonto', 0.0)
 
             # 2. Calculate Vendor Bills (Direct Costs)
             vendor_data = self._get_vendor_bills_from_analytic(analytic_account)
             vendor_bills_total = vendor_data['total']
-            vendor_skonto_received = vendor_data.get('skonto', 0.0)
 
-            # 3. Calculate Labor Costs (Timesheets)
+            # 3. Calculate Skonto (Cash Discounts) from analytic lines
+            skonto_data = self._get_skonto_from_analytic(analytic_account)
+            customer_skonto_taken = skonto_data['customer_skonto']
+            vendor_skonto_received = skonto_data['vendor_skonto']
+
+            # 4. Calculate Labor Costs (Timesheets)
             timesheet_data = self._get_timesheet_costs(analytic_account)
             total_hours_booked = timesheet_data['hours']
             labor_costs = timesheet_data['costs']
 
-            # 4. Calculate Other Costs (non-timesheet, non-bill analytic lines)
+            # 5. Calculate Other Costs (non-timesheet, non-bill analytic lines)
             other_costs = self._get_other_costs_from_analytic(analytic_account)
 
-            # 5. Calculate totals
+            # 6. Calculate totals
             total_costs_net = labor_costs + other_costs
             total_costs_with_tax = self._calculate_costs_with_tax(analytic_account, labor_costs, other_costs)
 
@@ -196,11 +199,8 @@ class ProjectAnalytics(models.Model):
         Handles both:
         - out_invoice: Customer invoices (positive revenue)
         - out_refund: Customer credit notes (negative revenue)
-
-        Also tracks Skonto (cash discounts) taken by customers by analyzing
-        reconciled payment entries with discount accounts (7300 range).
         """
-        result = {'invoiced': 0.0, 'paid': 0.0, 'skonto': 0.0}
+        result = {'invoiced': 0.0, 'paid': 0.0}
 
         # Find all posted customer invoice/credit note lines with this analytic account
         # Filter by account_type to ensure we only get revenue/receivable lines
@@ -246,14 +246,12 @@ class ProjectAnalytics(models.Model):
 
                     result['invoiced'] += line_amount
 
-                    # Calculate actual payments and Skonto for this line
-                    # by analyzing the reconciled entries
+                    # Calculate paid amount for this line
+                    # Payment proportion = (invoice.amount_total - invoice.amount_residual) / invoice.amount_total
                     if abs(invoice.amount_total) > 0:
-                        payment_data = self._calculate_line_payment_and_skonto(
-                            line, invoice, line_amount, percentage, is_customer=True
-                        )
-                        result['paid'] += payment_data['paid']
-                        result['skonto'] += payment_data['skonto']
+                        payment_ratio = (invoice.amount_total - invoice.amount_residual) / invoice.amount_total
+                        line_paid = line_amount * payment_ratio
+                        result['paid'] += line_paid
 
             except Exception as e:
                 _logger.warning(f"Error parsing analytic_distribution for line {line.id}: {e}")
@@ -272,11 +270,8 @@ class ProjectAnalytics(models.Model):
         Handles both:
         - in_invoice: Vendor bills (positive cost)
         - in_refund: Vendor refunds (negative cost)
-
-        Also tracks Skonto (cash discounts) received from vendors by analyzing
-        reconciled payment entries with discount accounts (4730 range).
         """
-        result = {'total': 0.0, 'skonto': 0.0}
+        result = {'total': 0.0}
 
         # Find all posted vendor bill/refund lines with this analytic account
         # Filter by account_type to ensure we only get expense/payable lines
@@ -320,94 +315,49 @@ class ProjectAnalytics(models.Model):
 
                     result['total'] += line_amount
 
-                    # Calculate Skonto received from vendor for this line
-                    if abs(bill.amount_total) > 0:
-                        payment_data = self._calculate_line_payment_and_skonto(
-                            line, bill, line_amount, percentage, is_customer=False
-                        )
-                        result['skonto'] += payment_data['skonto']
-
             except Exception as e:
                 _logger.warning(f"Error parsing analytic_distribution for bill line {line.id}: {e}")
                 continue
 
         return result
 
-    def _calculate_line_payment_and_skonto(self, line, move, line_amount, percentage, is_customer=True):
+    def _get_skonto_from_analytic(self, analytic_account):
         """
-        Calculate actual payment and Skonto for a specific invoice/bill line.
+        Get Skonto (cash discounts) by querying analytic lines from discount accounts.
 
-        This method analyzes the reconciled entries on the invoice/bill to:
-        1. Track actual payments received/made
-        2. Identify cash discount (Skonto) entries
+        This is a simpler and more reliable approach than analyzing reconciliation.
+        Skonto entries are typically posted to specific accounts with analytic distribution.
 
-        Args:
-            line: The invoice/bill line (account.move.line)
-            move: The invoice/bill (account.move)
-            line_amount: The calculated line amount for this project
-            percentage: The project percentage for this line
-            is_customer: True for customer invoices, False for vendor bills
+        Customer Skonto (Gewährte Skonti): Accounts 7300-7303 (expense - reduces profit)
+        Vendor Skonto (Erhaltene Skonti): Accounts 4730-4733 (income - increases profit)
 
         Returns:
-            dict: {'paid': amount_paid, 'skonto': skonto_amount}
+            dict: {'customer_skonto': amount, 'vendor_skonto': amount}
         """
-        result = {'paid': 0.0, 'skonto': 0.0}
+        result = {'customer_skonto': 0.0, 'vendor_skonto': 0.0}
 
-        # Get the receivable/payable line from the invoice/bill
-        if is_customer:
-            account_type = 'asset_receivable'
-            skonto_accounts = ['7300', '7301', '7302', '7303']  # Gewährte Skonti (expense)
-        else:
-            account_type = 'liability_payable'
-            skonto_accounts = ['4730', '4731', '4732', '4733']  # Erhaltene Skonti (income)
+        # Get all analytic lines for this account
+        analytic_lines = self.env['account.analytic.line'].search([
+            ('account_id', '=', analytic_account.id)
+        ])
 
-        # Find the receivable/payable line for this invoice/bill
-        receivable_lines = move.line_ids.filtered(
-            lambda l: l.account_id.account_type == account_type and not l.reconciled == False
-        )
-
-        if not receivable_lines:
-            # No payment info available, use residual calculation
-            if abs(move.amount_total) > 0:
-                payment_ratio = (move.amount_total - move.amount_residual) / move.amount_total
-                result['paid'] = line_amount * payment_ratio
-            return result
-
-        # Analyze reconciliation to find payments and Skonto
-        for rec_line in receivable_lines:
-            if not rec_line.matched_debit_ids and not rec_line.matched_credit_ids:
+        for line in analytic_lines:
+            if not line.move_line_id or not line.move_line_id.account_id:
                 continue
 
-            # Get all reconciled entries (payments and discounts)
-            reconciled_items = rec_line.matched_debit_ids + rec_line.matched_credit_ids
+            account_code = line.move_line_id.account_id.code
+            if not account_code:
+                continue
 
-            for item in reconciled_items:
-                # Get the counterpart line (payment or discount)
-                counterpart_line = item.debit_move_id if item.credit_move_id == rec_line else item.credit_move_id
+            # Customer Skonto (Gewährte Skonti) - expense accounts 7300-7303
+            # These reduce our revenue/profit (customer got discount)
+            if account_code.startswith(('7300', '7301', '7302', '7303')):
+                result['customer_skonto'] += abs(line.amount)
 
-                if not counterpart_line:
-                    continue
-
-                # Calculate the proportion of this reconciliation item
-                if abs(move.amount_total) > 0:
-                    item_ratio = abs(item.amount) / abs(move.amount_total)
-                else:
-                    continue
-
-                # Check if this is a Skonto entry (discount account)
-                is_skonto = any(
-                    counterpart_line.account_id.code and counterpart_line.account_id.code.startswith(acc_code)
-                    for acc_code in skonto_accounts
-                )
-
-                if is_skonto:
-                    # This is a cash discount entry
-                    skonto_for_line = line_amount * item_ratio
-                    result['skonto'] += abs(skonto_for_line)
-                else:
-                    # This is a regular payment
-                    payment_for_line = line_amount * item_ratio
-                    result['paid'] += abs(payment_for_line)
+            # Vendor Skonto (Erhaltene Skonti) - income accounts 4730-4733
+            # These increase our profit (we got discount from vendor)
+            elif account_code.startswith(('4730', '4731', '4732', '4733')):
+                result['vendor_skonto'] += abs(line.amount)
 
         return result
 
