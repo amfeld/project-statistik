@@ -1,6 +1,6 @@
 {
     'name': 'Project Statistic',
-    'version': '18.0.1.0.0',
+    'version': '18.0.1.0.1',
     'category': 'Project',
     'summary': 'Enhanced project analytics with financial data',
     'description': """
