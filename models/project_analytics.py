@@ -114,11 +114,15 @@ class ProjectAnalytics(models.Model):
         for record in self:
             record.project_id_display = str(record.id)
 
-    @api.depends('sale_line_id', 'account_id')
+    @api.depends('partner_id', 'user_id')
     def _compute_financial_data(self):
         """
         Compute all financial data for the project based on analytic account lines (plan_id=1).
         This is the single source of truth for Odoo v18 German accounting.
+
+        Note: We depend on partner_id and user_id (guaranteed core fields) rather than
+        account_id or sale_line_id which may not exist if certain modules aren't installed.
+        The actual financial data is computed from account.analytic.line records.
         """
         for project in self:
             # Initialize all fields
