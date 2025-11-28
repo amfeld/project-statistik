@@ -157,7 +157,7 @@
                         <page string="Rentabilität" name="profitability">
                             <group>
                                 <group>
-                                    <field name="profit_loss" class="text-success" widget="monetary"/>
+                                    <field name="profit_loss"/>
                                     <field name="negative_difference"/>
                                 </group>
                             </group>

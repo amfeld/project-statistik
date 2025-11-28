@@ -7,18 +7,20 @@ _logger = logging.getLogger(__name__)
 
 class ProjectAnalytics(models.Model):
     _inherit = 'project.project'
-    _description = _('Project Analytics Extension')
+    _description = 'Project Analytics Extension'
 
     client_name = fields.Char(
         string='Name of Client',
         related='partner_id.name',
         store=True,
+        readonly=True,
         help="The customer/client this project is for. This is automatically filled from the project's partner."
     )
     head_of_project = fields.Char(
         string='Head of Project',
         related='user_id.name',
         store=True,
+        readonly=True,
         help="The person responsible for managing this project. This is the project manager assigned to the project."
     )
 
@@ -254,9 +256,9 @@ class ProjectAnalytics(models.Model):
         # Filter by account_type to ensure we only get revenue/receivable lines
         invoice_lines = self.env['account.move.line'].search([
             ('analytic_distribution', '!=', False),
-            ('parent_state', '=', 'posted'),
+            ('move_id.state', '=', 'posted'),
             ('move_id.move_type', 'in', ['out_invoice', 'out_refund']),
-            ('display_type', '=', False),  # Exclude section/note lines
+            ('display_type', 'not in', ['line_section', 'line_note']),  # Exclude section/note lines
             '|',
             ('account_id.account_type', '=', 'income'),
             ('account_id.account_type', '=', 'income_other')
@@ -325,9 +327,9 @@ class ProjectAnalytics(models.Model):
         # Filter by account_type to ensure we only get expense/payable lines
         bill_lines = self.env['account.move.line'].search([
             ('analytic_distribution', '!=', False),
-            ('parent_state', '=', 'posted'),
+            ('move_id.state', '=', 'posted'),
             ('move_id.move_type', 'in', ['in_invoice', 'in_refund']),
-            ('display_type', '=', False),  # Exclude section/note lines
+            ('display_type', 'not in', ['line_section', 'line_note']),  # Exclude section/note lines
             ('account_id.account_type', '=', 'expense')
         ])
 

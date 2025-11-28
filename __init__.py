@@ -31,11 +31,16 @@ def uninstall_hook(env):
         'head_of_project'
     ]
 
-    # Drop each column individually to avoid SQL concatenation risks
+    # Drop each column individually using safe identifier quoting
     try:
+        from psycopg2 import sql
         for field in fields_to_remove:
             try:
-                env.cr.execute(f"ALTER TABLE project_project DROP COLUMN IF EXISTS {field}")
+                # Use sql.Identifier to safely quote column names
+                query = sql.SQL("ALTER TABLE project_project DROP COLUMN IF EXISTS {}").format(
+                    sql.Identifier(field)
+                )
+                env.cr.execute(query)
             except Exception as field_error:
                 _logger.warning(f"Could not drop column {field}: {field_error}")
         _logger.info("Successfully removed project_statistic database columns")
