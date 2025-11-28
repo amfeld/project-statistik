@@ -93,16 +93,16 @@
         </field>
     </record>
 
-    <menuitem id="project_analytic.menu_project_analytics_main"
-              name="Project Analytics"
+    <menuitem id="menu_project_analytics_main"
+              name="Project Statistic"
               parent="account.menu_finance"
               sequence="25"
               groups="account.group_account_readonly"/>
 
-    <menuitem id="project_analytic.menu_project_analytics_dashboard"
+    <menuitem id="menu_project_analytics_dashboard"
               name="Dashboard"
-              parent="project_analytic.menu_project_analytics_main"
-              action="project_analytic.action_project_analytics_report"
+              parent="menu_project_analytics_main"
+              action="action_project_analytics_report"
               sequence="1"
               groups="account.group_account_readonly"/>
 </odoo>
