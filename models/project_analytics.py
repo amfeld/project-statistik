@@ -484,6 +484,41 @@ class ProjectAnalytics(models.Model):
 
         return total_costs_with_tax
 
+    def action_view_account_analytic_line(self):
+        """
+        Open analytic lines for this project.
+        Shows all account.analytic.line records associated with the project's analytic account.
+        """
+        self.ensure_one()
+
+        # Get the analytic account
+        analytic_account = None
+        if hasattr(self, 'analytic_account_id') and self.analytic_account_id:
+            analytic_account = self.analytic_account_id
+        elif hasattr(self, 'account_id') and self.account_id:
+            analytic_account = self.account_id
+
+        if not analytic_account:
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'message': 'No analytic account found for this project.',
+                    'type': 'warning',
+                    'sticky': False,
+                }
+            }
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': f'Analytic Lines - {self.name}',
+            'res_model': 'account.analytic.line',
+            'view_mode': 'tree,form',
+            'domain': [('account_id', '=', analytic_account.id)],
+            'context': {'default_account_id': analytic_account.id},
+            'target': 'current',
+        }
+
     def action_open_project_dashboard(self):
         """
         Open the standard project dashboard/form view for this project.
