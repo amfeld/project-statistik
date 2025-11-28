@@ -27,12 +27,6 @@ class ProjectAnalytics(models.Model):
         store=True,
         help="The person responsible for managing this project. This is the project manager assigned to the project."
     )
-    project_id = fields.Many2one(
-        "project.project",
-        string="Project",
-        readonly=True,
-        help="Reference to the project record"
-    )
 
     # Customer Invoice fields
     customer_invoiced_amount = fields.Float(
@@ -138,8 +132,10 @@ class ProjectAnalytics(models.Model):
     @api.depends('partner_id', 'user_id')
     def _compute_financial_data(self):
         """
-        Compute all financial data for the project based on analytic account lines (plan_id=1).
-        This is the single source of truth for Odoo v18 German accounting.
+        Compute all financial data for the project based on analytic account lines.
+        This is the single source of truth for Odoo v18 accounting.
+
+        Uses the standard Odoo project analytic plan (analytic.analytic_plan_projects).
 
         Note: We depend on partner_id and user_id (guaranteed core fields) rather than
         account_id or sale_line_id which may not exist if certain modules aren't installed.
@@ -160,20 +156,27 @@ class ProjectAnalytics(models.Model):
             total_hours_booked = 0.0
             labor_costs = 0.0
 
-            # Get the analytic account associated with the project (plan_id=1 ONLY)
+            # Get the analytic account associated with the project (projects plan ONLY)
             analytic_account = None
+
+            # Get the standard project analytic plan reference
+            try:
+                project_plan = self.env.ref('analytic.analytic_plan_projects', raise_if_not_found=False)
+            except Exception:
+                project_plan = None
+
             if hasattr(project, 'analytic_account_id') and project.analytic_account_id:
-                # Verify this is plan_id=1 (project plan in German accounting)
-                if hasattr(project.analytic_account_id, 'plan_id') and project.analytic_account_id.plan_id.id == 1:
+                # Verify this is the project plan
+                if project_plan and hasattr(project.analytic_account_id, 'plan_id') and project.analytic_account_id.plan_id == project_plan:
                     analytic_account = project.analytic_account_id
 
             # Fallback to account_id if analytic_account_id not found
             if not analytic_account and hasattr(project, 'account_id') and project.account_id:
-                if hasattr(project.account_id, 'plan_id') and project.account_id.plan_id.id == 1:
+                if project_plan and hasattr(project.account_id, 'plan_id') and project.account_id.plan_id == project_plan:
                     analytic_account = project.account_id
 
             if not analytic_account:
-                _logger.warning(f"Project {project.id} has no analytic account - skipping financial computation")
+                _logger.debug(f"Project {project.id} has no analytic account - skipping financial computation")
                 project.customer_invoiced_amount = 0.0
                 project.customer_paid_amount = 0.0
                 project.customer_outstanding_amount = 0.0

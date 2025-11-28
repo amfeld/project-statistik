@@ -41,7 +41,7 @@ class TestProjectAnalytics(TransactionCase):
             'name': 'Project Without Analytic',
         })
 
-        project_no_analytic._compute_project_analytics()
+        project_no_analytic._compute_financial_data()
 
         self.assertEqual(project_no_analytic.customer_invoiced_amount, 0.0)
         self.assertEqual(project_no_analytic.vendor_bills_total, 0.0)
@@ -63,7 +63,7 @@ class TestProjectAnalytics(TransactionCase):
         })
         invoice.action_post()
 
-        self.project._compute_project_analytics()
+        self.project._compute_financial_data()
 
         self.assertGreater(self.project.customer_invoiced_amount, 0.0)
         self.assertEqual(self.project.customer_outstanding_amount, self.project.customer_invoiced_amount)
@@ -84,7 +84,7 @@ class TestProjectAnalytics(TransactionCase):
         })
         bill.action_post()
 
-        self.project._compute_project_analytics()
+        self.project._compute_financial_data()
 
         self.assertGreater(self.project.vendor_bills_total, 0.0)
 
@@ -113,7 +113,7 @@ class TestProjectAnalytics(TransactionCase):
             }).id,
         })
 
-        self.project._compute_project_analytics()
+        self.project._compute_financial_data()
 
         self.assertGreaterEqual(self.project.customer_skonto_taken, 0.0)
 
@@ -142,7 +142,7 @@ class TestProjectAnalytics(TransactionCase):
             }).id,
         })
 
-        self.project._compute_project_analytics()
+        self.project._compute_financial_data()
 
         self.assertGreaterEqual(self.project.vendor_skonto_received, 0.0)
 
@@ -176,7 +176,7 @@ class TestProjectAnalytics(TransactionCase):
         })
         bill.action_post()
 
-        self.project._compute_project_analytics()
+        self.project._compute_financial_data()
 
         expected_profit = self.project.customer_invoiced_amount - self.project.vendor_bills_total - self.project.total_costs_net
         self.assertAlmostEqual(self.project.profit_loss, expected_profit, places=2)

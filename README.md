@@ -184,8 +184,8 @@ Calculations happen **in real-time** when you view:
 - Uses `parent_state='posted'` for invoice/bill lines
 - Filters out display lines (`display_type=False`)
 - Compatible with German chart of accounts
-- No `store=True` on computed fields (ensures real-time accuracy)
-- **Only uses analytic plan_id=1** (project plan in German accounting)
+- Uses `store=True` on computed fields for performance and aggregation (enables sum, pivot, graph views)
+- **Uses analytic plan reference** (standard Odoo project plan)
 
 ### Handles All Document Types
 - ✅ Customer Invoices (`out_invoice`)

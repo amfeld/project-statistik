@@ -32,13 +32,13 @@ def uninstall_hook(env):
         'head_of_project'
     ]
 
-    drop_statements = ', '.join([f'DROP COLUMN IF EXISTS {field}' for field in fields_to_remove])
-
+    # Drop each column individually to avoid SQL concatenation risks
     try:
-        env.cr.execute(f"""
-            ALTER TABLE project_project
-            {drop_statements}
-        """)
+        for field in fields_to_remove:
+            try:
+                env.cr.execute(f"ALTER TABLE project_project DROP COLUMN IF EXISTS {field}")
+            except Exception as field_error:
+                _logger.warning(f"Could not drop column {field}: {field_error}")
         _logger.info("Successfully removed project_statistic database columns")
     except Exception as e:
         _logger.warning(f"Error during database cleanup: {e}")

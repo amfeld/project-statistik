@@ -182,16 +182,6 @@ msgid "Total cost of labor based on timesheets (Personalkosten). Calculated from
 msgstr "Gesamtkosten der Arbeit basierend auf Zeiterfassungen (Personalkosten). Berechnet aus Zeiterfassungseinträgen multipliziert mit Mitarbeiter-Stundensätzen. Dies ist eine Hauptkomponente der internen Projektkosten."
 
 #. module: project_statistic
-#: model:ir.model.fields,field_description:project_statistic.field_project_project__project_id
-msgid "Project"
-msgstr "Projekt"
-
-#. module: project_statistic
-#: model:ir.model.fields,help:project_statistic.field_project_project__project_id
-msgid "Reference to the project record"
-msgstr "Verweis auf den Projektdatensatz"
-
-#. module: project_statistic
 #: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
 msgid "Project Details"
 msgstr "Projektdetails"
