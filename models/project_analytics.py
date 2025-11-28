@@ -201,7 +201,7 @@ class ProjectAnalytics(models.Model):
             vendor_skonto_received = skonto_data['vendor_skonto']
 
             # 4. Calculate Labor Costs (Timesheets)
-            timesheet_data = self._get_timesheet_costs(analytic_account)
+            timesheet_data = project._get_timesheet_costs(analytic_account, project.id)
             total_hours_booked = timesheet_data['hours']
             labor_costs = timesheet_data['costs']
 
@@ -414,7 +414,7 @@ class ProjectAnalytics(models.Model):
 
         return result
 
-    def _get_timesheet_costs(self, analytic_account):
+    def _get_timesheet_costs(self, analytic_account, project_id=None):
         """
         Get timesheet hours and costs from account.analytic.line.
         Timesheets have is_timesheet=True.
@@ -422,11 +422,19 @@ class ProjectAnalytics(models.Model):
         Uses a two-step approach:
         1. First try to filter by project_id (if available) to get more specific results
         2. If no results, fall back to analytic_account only
+
+        Args:
+            analytic_account: The analytic account to search for
+            project_id: Optional project ID to filter by (defaults to self.id if self is singleton)
         """
         result = {'hours': 0.0, 'costs': 0.0}
 
-        # Ensure we're working with a single record
-        self.ensure_one()
+        # Use provided project_id or self.id if singleton
+        if project_id is None:
+            if len(self) == 1:
+                project_id = self.id
+            else:
+                project_id = False
 
         # Build the base domain
         timesheet_domain = [
@@ -436,9 +444,9 @@ class ProjectAnalytics(models.Model):
 
         # Try to add project_id filter if the field exists
         timesheet_lines = self.env['account.analytic.line']
-        if hasattr(self.env['account.analytic.line'], 'project_id'):
+        if project_id and hasattr(self.env['account.analytic.line'], 'project_id'):
             # First attempt: search with project_id filter
-            timesheet_domain_with_project = timesheet_domain + [('project_id', '=', self.id)]
+            timesheet_domain_with_project = timesheet_domain + [('project_id', '=', project_id)]
             timesheet_lines = self.env['account.analytic.line'].search(timesheet_domain_with_project)
 
             # If no results with project filter, try without it
