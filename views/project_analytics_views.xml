@@ -189,17 +189,17 @@
     </record>
 
     <menuitem id="menu_project_analytics_main"
-              name="Project Statistic"
-              parent="project.menu_projects"
+              name="Project Reporting"
+              parent="account.menu_accounting"
               sequence="25"
-              groups="project.group_project_user"/>
+              groups="account.group_account_readonly"/>
 
     <menuitem id="menu_project_analytics_dashboard"
               name="Dashboard"
               parent="menu_project_analytics_main"
               action="action_project_analytics_report"
               sequence="1"
-              groups="project.group_project_user"/>
+              groups="account.group_account_readonly"/>
 
     <!-- Inherit standard project form to add analytics button -->
     <record id="view_project_form_inherit_analytics_button" model="ir.ui.view">

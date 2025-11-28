@@ -3,7 +3,7 @@
     <!-- This file updates the menu sequence for the main analytics menu defined in views -->
     <data noupdate="0">
         <record id="menu_project_analytics_main" model="ir.ui.menu">
-            <field name="parent_id" ref="project.menu_projects"/>
+            <field name="parent_id" ref="account.menu_accounting"/>
             <field name="sequence">25</field>
         </record>
     </data>
