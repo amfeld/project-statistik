@@ -114,7 +114,7 @@ class ProjectAnalytics(models.Model):
         for record in self:
             record.project_id_display = str(record.id)
 
-    @api.depends('sale_line_id', 'account_id', 'analytic_distribution')
+    @api.depends('sale_line_id', 'account_id')
     def _compute_financial_data(self):
         """
         Compute all financial data for the project based on analytic account lines (plan_id=1).
